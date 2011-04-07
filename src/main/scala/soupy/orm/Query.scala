@@ -39,6 +39,13 @@ case class Query(val _from: String = null,
     this.copy(_limit = Some(_limit))
   }
 
+  def paginate(page: Int = 1, pageSize:Int = 20): Query = {
+    val limit = pageSize
+    val offset = (page - 1) * pageSize
+
+    this.copy(_limit = Some(limit), _offset = Some(offset))
+  }
+
   // composite order
   def order(_order: String): Query = {
     this.copy(_order = Some(_order))
@@ -46,6 +53,28 @@ case class Query(val _from: String = null,
 
   // composite criteria
   def where(_where: Criteria): Query = {
+    val the_where = if (this._where.isEmpty) {
+      _where
+    } else {
+      this._where.get.where(_where)
+    }
+
+    this.copy(_where = Some(the_where))
+  }
+
+  def where(_whereClause: String, args: Map[String, _]): Query = {
+    val _where = new MapRawCriteria(_whereClause, args)
+    val the_where = if (this._where.isEmpty) {
+      _where
+    } else {
+      this._where.get.where(_where)
+    }
+
+    this.copy(_where = Some(the_where))
+  }
+
+  def where(_whereClause: String, args: Any*): Query = {
+    val _where = new ListRawCriteria(_whereClause, args.toArray)
     val the_where = if (this._where.isEmpty) {
       _where
     } else {
@@ -65,21 +94,5 @@ case class Query(val _from: String = null,
     this.copy(_where = the_where)
   }
 
-  def toSQL: String = {
-    val sql = List[Option[String]](
-      (if (_select.isEmpty) Some("select *") else _select),
-      Some("from " + _from),
-      _join,
-      _where.map("where " + _.toSQL),
-      _order.map("order by " + _),
-      _group.map("group by " + _),
-      _having.map("having " + _),
-      _limit.map("limit " + _.toString),
-      _offset.map("offset " + _.toString)
-    ).filter(!_.isEmpty).map(_.get).mkString("\n")
 
-    sql
-  }
-
-  override def toString = toSQL
 }

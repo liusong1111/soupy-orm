@@ -7,14 +7,12 @@ trait Repository {
 }
 
 object Repository {
-  def executeQuery(repository:Repository, query:Query, callback: ResultSet => Unit): Unit = {
-    repository.within {
+  def executeQuery(sql:String, callback: ResultSet => Unit): Unit = {
+    Env.repository.within {
       conn =>
         var st: PreparedStatement = null
         var rs: ResultSet = null
         try {
-          val sql = query.toSQL
-//          soupy.persistence.logger.debug(sql)
           st = conn.prepareStatement(sql)
           rs = st.executeQuery
           while (rs.next) {

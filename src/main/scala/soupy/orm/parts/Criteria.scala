@@ -77,4 +77,16 @@ class OrCriteria(val criterias: Criteria*) extends CompositeCriteria {
   }
 }
 
+class RawCriteria(val sqlTemplate: String) extends SimpleCriteria {
+  override def toSQL = sqlTemplate
+}
+
+class ListRawCriteria(override val sqlTemplate: String, val args: Array[_]) extends RawCriteria(sqlTemplate) {
+
+}
+
+class MapRawCriteria(override val sqlTemplate: String, val args: Map[String, _]) extends RawCriteria(sqlTemplate) {
+
+}
+
 
