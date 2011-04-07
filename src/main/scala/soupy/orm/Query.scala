@@ -1,6 +1,5 @@
 package soupy.orm
 
-import java.sql.{PreparedStatement, ResultSet}
 import parts._
 
 case class Query(val _from: String = null,
@@ -81,8 +80,6 @@ case class Query(val _from: String = null,
 
     sql
   }
-
-
 
   override def toString = toSQL
 }

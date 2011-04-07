@@ -1,3 +1,5 @@
 package soupy.orm.adapters
 
-class OracleAdapter
+import soupy.orm.Adapter
+
+class OracleAdapter extends Adapter

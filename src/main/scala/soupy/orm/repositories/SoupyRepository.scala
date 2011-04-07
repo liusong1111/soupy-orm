@@ -1,14 +1,16 @@
 package soupy.orm.repositories
 
-import soupy.orm.Repository
 import java.sql.{DriverManager, Connection}
+import soupy.orm.{Env, Repository}
 
-class SoupyRepository(val name: String, val setting: Map[String, String])  extends Repository {
-  //TODO:hard code to mysql for now.
+class SoupyRepository extends Repository {
   def getConnection: Connection = {
     Class.forName("com.mysql.jdbc.Driver").newInstance
-    val conn = DriverManager.getConnection("jdbc:mysql:///" + setting("database"),
-      setting("user"), setting("password"))
+    val database = Env.orm.getString("database").get
+    val user = Env.orm.getString("user").get
+    val password = Env.orm.getString("password").get
+    val conn = DriverManager.getConnection("jdbc:mysql:///" + database,
+      user, password)
 
     conn
   }

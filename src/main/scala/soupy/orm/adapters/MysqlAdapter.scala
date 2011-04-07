@@ -1,3 +1,5 @@
 package soupy.orm.adapters
 
-class MysqlAdapter
+import soupy.orm.Adapter
+
+class MysqlAdapter extends Adapter
