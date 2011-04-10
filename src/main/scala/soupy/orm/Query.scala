@@ -62,19 +62,19 @@ case class Query(val _from: String = null,
     this.copy(_where = Some(the_where))
   }
 
-  def where(_whereClause: String, args: Map[String, _]): Query = {
-    val _where = new MapRawCriteria(_whereClause, args)
-    val the_where = if (this._where.isEmpty) {
-      _where
-    } else {
-      this._where.get.where(_where)
-    }
-
-    this.copy(_where = Some(the_where))
-  }
+//  def where(_whereClause: String, args: Map[String, _]): Query = {
+//    val _where = new MapRawCriteria(_whereClause, args)
+//    val the_where = if (this._where.isEmpty) {
+//      _where
+//    } else {
+//      this._where.get.where(_where)
+//    }
+//
+//    this.copy(_where = Some(the_where))
+//  }
 
   def where(_whereClause: String, args: Any*): Query = {
-    val _where = new ListRawCriteria(_whereClause, args.toArray)
+    val _where = new ListRawCriteria(_whereClause, args.toList)
     val the_where = if (this._where.isEmpty) {
       _where
     } else {

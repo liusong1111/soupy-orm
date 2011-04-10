@@ -19,7 +19,7 @@ object Env {
   }
 
   val mapper = {
-    val mapperClassName = orm.getString("mapper", "soupy.orm.mapper.SoupyMapper")
+    val mapperClassName = orm.getString("mapper", "soupy.orm.mappers.SoupyMapper")
     Class.forName(mapperClassName).newInstance.asInstanceOf[Mapper]
   }
 
