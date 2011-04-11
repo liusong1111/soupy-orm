@@ -6,7 +6,7 @@ import net.lag.logging.Logger
 
 object SqlExecutor{
   def main(args: Array[String]) {
-    Configgy.configure("/home/sliu/test/soupy-orm/src/main/resources/orm.conf")
+    Configgy.configure("/home/sliu/test/tmp/soupy-orm/src/main/resources/orm.conf")
     val config = Configgy.config
     val logger = Logger.get
     val host = config.getString("host")

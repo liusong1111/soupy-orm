@@ -5,7 +5,7 @@ import net.lag.configgy.Configgy
 import net.lag.logging.Logger
 
 object Env {
-  Configgy.configure("/home/sliu/test/soupy-orm/src/main/resources/orm.conf")
+  Configgy.configure("/home/sliu/test/tmp/soupy-orm/src/main/resources/orm.conf")
   val config = Configgy.config
   val logger = Logger.get
   val orm = config.getConfigMap("orm").get
@@ -24,7 +24,7 @@ object Env {
   }
 
   var repository = {
-    val repositoryClassName = orm.getString("repository", "soupy.orm.SoupyRepository")
+    val repositoryClassName = orm.getString("repository", "soupy.orm.repositories.SoupyRepository")
     Class.forName(repositoryClassName).newInstance.asInstanceOf[Repository]
   }
 }
