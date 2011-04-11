@@ -11,23 +11,42 @@
 import java.util.{EmptyStackException, Stack}
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
-import soupy.orm.{Env, Query}
+import reflect.BeanInfo
+import soupy.orm.{Repository, Env, Query}
+
+@BeanInfo
+class User {
+  var name: String = ""
+  var age: Int = 0
+}
 
 class StackSpec extends FlatSpec with ShouldMatchers {
-
-  "A Stack" should "pop values in last-in-first-out order" in {
-    val stack = new Stack[Int]
-    stack.push(1)
-    stack.push(2)
-    stack.pop() should equal (2)
-    stack.pop() should equal (1)
-    val query = new Query().where("name like ?", "%liu")
+  "Query" should "toSQL correctly" in {
+    val query = new Query().from("users").where("name like ?", "%liu")
     println(query.toString)
     println(Env.adapter.toSQL(query))
+
+    Env.adapter.toSQL(query) should equal("select *\nfrom users\nwhere name like ?")
   }
 
-  it should "throw NoSuchElementException if an empty stack is popped" in {
-    val emptyStack = new Stack[String]
-    evaluating { emptyStack.pop() } should produce [EmptyStackException]
+  "Repository" should "executeQuery correctly" in {
+    val query = new Query().from("users").where("name like '%liu'")
+    println(query.toString)
+    println(Env.adapter.toSQL(query))
+    Env.adapter.toSQL(query) should equal("select *\nfrom users\nwhere name like '%liu'")
+
+    Repository.executeQuery("select *\nfrom users\nwhere name like '%liu%'") {
+      rs =>
+        val u = Env.mapper.map[User](rs).get
+        println("-------")
+        println(u.name)
+        println(u.age)
+    }
   }
+
+
+  //  it should "throw NoSuchElementException if an empty stack is popped" in {
+  //    val emptyStack = new Stack[String]
+  //    evaluating { emptyStack.pop() } should produce [EmptyStackException]
+  //  }
 }

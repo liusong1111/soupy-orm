@@ -7,7 +7,7 @@ trait Repository {
 }
 
 object Repository {
-  def executeQuery(sql:String, callback: ResultSet => Unit): Unit = {
+  def executeQuery(sql:String)(callback: ResultSet => Unit): Unit = {
     Env.repository.within {
       conn =>
         var st: PreparedStatement = null
