@@ -9,7 +9,7 @@
 //}
 
 import java.util.{EmptyStackException, Stack}
-import org.scalatest.FlatSpec
+import org.scalatest.Spec
 import org.scalatest.matchers.ShouldMatchers
 import reflect.BeanInfo
 import soupy.orm.{Repository, Env, Query}
@@ -20,8 +20,11 @@ class User {
   var age: Int = 0
 }
 
-class StackSpec extends FlatSpec with ShouldMatchers {
-  "Query" should "toSQL correctly" in {
+class StackSpec extends Spec with ShouldMatchers {
+
+  it("should toSQL correctly"){
+
+    new Query()
     val query = new Query().from("users").where("name like ?", "%liu")
     println(query.toString)
     println(Env.adapter.toSQL(query))
@@ -29,7 +32,7 @@ class StackSpec extends FlatSpec with ShouldMatchers {
     Env.adapter.toSQL(query) should equal("select *\nfrom users\nwhere name like ?")
   }
 
-  "Repository" should "executeQuery correctly" in {
+  it("should executeQuery correctly"){
     val query = new Query().from("users").where("name like '%liu'")
     println(query.toString)
     println(Env.adapter.toSQL(query))
