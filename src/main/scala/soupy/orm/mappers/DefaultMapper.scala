@@ -4,7 +4,7 @@ import soupy.orm.Mapper
 import java.sql.ResultSet
 import java.beans.Introspector
 
-class SoupyMapper extends Mapper{
+class DefaultMapper extends Mapper{
   def map[A](rs: ResultSet)(implicit manifest: Manifest[A]) = {
     val clazz = manifest.erasure
     val instance = clazz.newInstance

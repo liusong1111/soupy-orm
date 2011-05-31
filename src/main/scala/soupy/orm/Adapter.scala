@@ -1,5 +1,8 @@
 package soupy.orm
 
+import adapters.{MysqlAdapter, OracleAdapter}
+import java.lang.Exception
+
 trait Adapter {
   def toSQL(query: Query): String = {
     var sql = List[Option[String]](
@@ -36,4 +39,14 @@ trait Adapter {
   }
 
   def paginate(sql: String, limit: Option[Int], offset: Option[Int]): String
+}
+
+object Adapter{
+  def apply(adapterName:String):Adapter = {
+    adapterName match{
+      case "mysql" => MysqlAdapter
+      case "oracle" => OracleAdapter
+      case _ => throw new Exception("adaper named \"" + adapterName + "\" not found")
+    }
+  }
 }

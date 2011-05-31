@@ -1,14 +1,16 @@
 package soupy.orm
 
 import java.sql.{PreparedStatement, ResultSet, Connection}
+import net.lag.configgy.ConfigMap
 
-trait Repository {
+abstract class Repository(val adapter:Adapter, val configMap:ConfigMap) {
   def within(executor: Connection => Unit)
 }
 
 object Repository {
-  def executeQuery(sql:String)(callback: ResultSet => Unit): Unit = {
-    Env.repository.within {
+  import soupy.orm.Env._
+  def executeQuery(sql:String)(callback: ResultSet => Unit)(implicit repository:Repository) : Unit = {
+    repository.within {
       conn =>
         var st: PreparedStatement = null
         var rs: ResultSet = null

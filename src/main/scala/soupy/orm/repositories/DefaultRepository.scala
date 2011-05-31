@@ -1,14 +1,15 @@
 package soupy.orm.repositories
 
 import java.sql.{DriverManager, Connection}
-import soupy.orm.{Env, Repository}
+import soupy.orm.{Adapter, Env, Repository}
+import net.lag.configgy.ConfigMap
 
-class SoupyRepository extends Repository {
+class DefaultRepository(override val adapter:Adapter, override val configMap:ConfigMap) extends Repository(adapter, configMap) {
+  //TODO: use a connection pool or container to emit connection
   def getConnection: Connection = {
-    Class.forName("com.mysql.jdbc.Driver").newInstance
-    val database = Env.orm.getString("database").get
-    val user = Env.orm.getString("user").get
-    val password = Env.orm.getString("password").get
+    val database = configMap.getString("database").get
+    val user = configMap.getString("user", "root")
+    val password = configMap.getString("password", "")
     val conn = DriverManager.getConnection("jdbc:mysql:///" + database,
       user, password)
 

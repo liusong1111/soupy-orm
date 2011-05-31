@@ -11,20 +11,20 @@ class User {
 
 class MapperSpec extends Spec with ShouldMatchers {
   describe("mappers") {
-    describe("SoupyMapper") {
+    describe("DefaultMapper") {
       it("should executeQuery correctly") {
         val query = new Query().from("users").where("name like '%liu'")
         println(query.toString)
-        println(Env.adapter.toSQL(query))
-        Env.adapter.toSQL(query) should equal("select *\nfrom users\nwhere name like '%liu'")
+        println(Env.repository.adapter.toSQL(query))
+        Env.repository.adapter.toSQL(query) should equal("select *\nfrom users\nwhere name like '%liu'")
 
-        Repository.executeQuery("select *\nfrom users\nwhere name like '%liu%'") {
-          rs =>
-            val u = Env.mapper.map[User](rs).get
-            println("-------")
-            println(u.name)
-            println(u.age)
-        }
+//        Repository.executeQuery("select *\nfrom users\nwhere name like '%liu%'") {
+//          rs =>
+////            val u = Env.mapper.map[User](rs).get
+////            println("-------")
+////            println(u.name)
+////            println(u.age)
+//        }
       }
     }
   }

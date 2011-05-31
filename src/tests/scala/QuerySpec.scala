@@ -6,8 +6,8 @@ class QuerySpec extends Spec with ShouldMatchers {
   it("should toSQL correctly") {
     val query = new Query().from("users").where("name like ?", "%liu")
     println(query.toString)
-    println(Env.adapter.toSQL(query))
+    println(Env.repository.adapter.toSQL(query))
 
-    Env.adapter.toSQL(query) should equal("select *\nfrom users\nwhere name like ?")
+    Env.repository.adapter.toSQL(query) should equal("select *\nfrom users\nwhere name like ?")
   }
 }

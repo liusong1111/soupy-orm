@@ -1,30 +1,21 @@
 package soupy.orm
 
-import adapters.{OracleAdapter, MysqlAdapter}
 import net.lag.configgy.Configgy
 import net.lag.logging.Logger
 
 object Env {
-  Configgy.configure("/home/sliu/test/tmp/soupy-orm/src/main/resources/orm.conf")
-  val config = Configgy.config
+  Configgy.configure(getClass.getResource("env.conf").getPath)
+  val config = Configgy.config 
+
+  val mode = config.getString("mode", "development")
+  
   val logger = Logger.get
-  val orm = config.getConfigMap("orm").get
 
-  val adapter = {
-    val adapterName = orm.getString("adapter").get
-    adapterName match{
-      case "oracle" => new MysqlAdapter
-      case "mysql" => new OracleAdapter
+  val db = config.getConfigMap("db").get.getConfigMap(mode).get
+
+  implicit val repository:Repository = {
+    db.getString("repository").getOrElse("default") match{
+      case _ => new soupy.orm.repositories.DefaultRepository(Adapter(db.getString("adapter", "mysql")), db)
     }
-  }
-
-  val mapper = {
-    val mapperClassName = orm.getString("mapper", "soupy.orm.mappers.SoupyMapper")
-    Class.forName(mapperClassName).newInstance.asInstanceOf[Mapper]
-  }
-
-  var repository = {
-    val repositoryClassName = orm.getString("repository", "soupy.orm.repositories.SoupyRepository")
-    Class.forName(repositoryClassName).newInstance.asInstanceOf[Repository]
   }
 }
