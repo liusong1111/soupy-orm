@@ -12,7 +12,7 @@ object OracleAdapter extends Adapter {
       query._order.map("order by " + _),
       query._group.map("group by " + _),
       query._having.map("having " + _)
-    ).filter(!_.isEmpty).map(_.get).mkString("\n")
+    ).filter(!_.isEmpty).map(_.get).mkString(" ")
 
     if (!query._limit.isEmpty || !query._offset.isEmpty) {
       val min = query._limit.getOrElse(20)

@@ -14,7 +14,7 @@ trait Adapter {
       query._where.map("where " + _.toSQL),
       query._group.map("group by " + _),
       query._having.map("having " + _)
-    ).filter(!_.isEmpty).map(_.get).mkString("\n")
+    ).filter(!_.isEmpty).map(_.get).mkString(" ")
 
     sql
   }

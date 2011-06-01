@@ -16,7 +16,7 @@ object MysqlAdapter extends Adapter {
       query._having.map("having " + _),
       query._limit.map("limit " + _.toString),
       query._offset.map("offset " + _.toString)
-    ).filter(!_.isEmpty).map(_.get).mkString("\n")
+    ).filter(!_.isEmpty).map(_.get).mkString(" ")
 
     sql
   }
