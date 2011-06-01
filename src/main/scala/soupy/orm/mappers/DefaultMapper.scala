@@ -4,8 +4,9 @@ import soupy.orm.Mapper
 import java.sql.ResultSet
 import java.beans.Introspector
 
-class DefaultMapper extends Mapper{
-  def map[A](rs: ResultSet)(implicit manifest: Manifest[A]) = {
+class DefaultMapper[A:Manifest] extends Mapper[A]{
+  def map(rs: ResultSet):A = {
+    val manifest = implicitly[Manifest[A]]
     val clazz = manifest.erasure
     val instance = clazz.newInstance
     val beanInfo = Introspector.getBeanInfo(clazz)
@@ -13,6 +14,7 @@ class DefaultMapper extends Mapper{
       val writter = f.getWriteMethod
       writter.invoke(instance, rs.getObject(f.getName))
     }
-    Some(instance.asInstanceOf[A])
+
+    instance.asInstanceOf[A]
   }
 }

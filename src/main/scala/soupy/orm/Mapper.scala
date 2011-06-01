@@ -2,6 +2,6 @@ package soupy.orm
 
 import java.sql.ResultSet
 
-trait Mapper{
-  def map[A](rs:ResultSet)(implicit manifest:Manifest[A]):Option[A]
+abstract class Mapper[A:Manifest]{
+  def map(rs:ResultSet):A
 }

@@ -1,9 +1,8 @@
 package soupy.orm
 
 import java.sql.{PreparedStatement, ResultSet, Connection}
-import net.lag.configgy.ConfigMap
 
-abstract class Repository(val adapter:Adapter, val configMap:ConfigMap) {
+abstract class Repository(val adapter:Adapter, val settings:Map[String, String]) {
   def within(executor: Connection => Unit)
 }
 
