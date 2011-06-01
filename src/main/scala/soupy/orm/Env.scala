@@ -4,7 +4,7 @@ import net.lag.configgy.Configgy
 import net.lag.logging.Logger
 
 object Env {
-  Configgy.configure(getClass.getResource("env.conf").getPath)
+  Configgy.configure(getClass.getResource("/env.conf").getPath)
   val config = Configgy.config 
 
   val mode = config.getString("mode", "development")

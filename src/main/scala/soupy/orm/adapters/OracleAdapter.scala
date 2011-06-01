@@ -1,16 +1,29 @@
 package soupy.orm.adapters
 
-import soupy.orm.{Adapter}
+import soupy.orm.{Query, Adapter}
 
 object OracleAdapter extends Adapter {
-  def paginate(sql: String, limit: Option[Int], offset: Option[Int]): String = {
-    val min = limit.get
-    val max = min + offset.get
-    """select * from
-        (select A.*, ROWNUM rn
-        from (""" + sql + """)
-        where ROWNUM <= """ + max + """)
-        where rn >= """ + min + """)
-     """
+  def toSQL(query: Query): String = {
+    var sql = List[Option[String]](
+      (if (query._select.isEmpty) Some("select *") else query._select),
+      Some("from " + query._from),
+      query._join,
+      query._where.map("where " + _.toSQL),
+      query._order.map("order by " + _),
+      query._group.map("group by " + _),
+      query._having.map("having " + _)
+    ).filter(!_.isEmpty).map(_.get).mkString("\n")
+
+    if (!query._limit.isEmpty || !query._offset.isEmpty) {
+      val min = query._limit.getOrElse(20)
+      val max = min + query._offset.getOrElse(0)
+      sql = "select * from (select A.*, ROWNUM rn from (" +
+        sql +
+        ") where ROWNUM <= " +
+        max +
+        ") where rn >= " + min + ")"
+    }
+
+    sql
   }
 }
