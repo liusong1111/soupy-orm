@@ -1,11 +1,12 @@
 package soupy.orm.repositories
 
-import java.sql.{DriverManager, Connection}
-import soupy.orm.{Adapter, Repository}
-import net.lag.configgy.ConfigMap
+import java.sql.{ResultSet, PreparedStatement, DriverManager, Connection}
+import soupy.orm.{Env, Adapter, Repository}
 
 class DefaultRepository(override val adapter: Adapter, override val settings: Map[String, String]) extends Repository(adapter, settings) {
-  def within(callback: Connection => Unit) {
+  val logger = Env.logger
+
+  def withinConnection(callback: Connection => Unit) {
     val conn = getConnection
     try {
       callback(conn)
@@ -16,6 +17,55 @@ class DefaultRepository(override val adapter: Adapter, override val settings: Ma
         case _ => None
       }
     }
+  }
+
+  def executeQuery(sql: String)(callback: ResultSet => Unit): Unit = {
+    withinConnection {
+      conn =>
+        var st: PreparedStatement = null
+        var rs: ResultSet = null
+        try {
+          logger.debug(sql)
+          st = conn.prepareStatement(sql)
+          rs = st.executeQuery
+          while (rs.next) {
+            callback(rs)
+          }
+        } finally {
+          try {
+            rs.close()
+          } catch {
+            case _ => None
+          }
+          try {
+            st.close()
+          } catch {
+            case _ => None
+          }
+        }
+    }
+  }
+
+  def executeUpdate(sql: String): Int = {
+    var rowCount = 0
+
+    withinConnection {
+      conn =>
+        var st: PreparedStatement = null
+        try {
+          logger.debug(sql)
+          st = conn.prepareStatement(sql)
+          rowCount = st.executeUpdate
+        } finally {
+          try {
+            st.close
+          } catch {
+            case _ => None
+          }
+        }
+    }
+
+    rowCount
   }
 
   //TODO: use a connection pool or container to emit connection
