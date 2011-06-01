@@ -28,12 +28,12 @@ class MapperSpec extends Spec with ShouldMatchers {
           }
         }
         val query = new Query().from("users").where("name = 'liusong'")
-        val _firstUser = query.first[User](repository, UserMapper)
+        val _firstUser = query.first[User](UserMapper, repository)
         _firstUser.isEmpty should be(false)
         val firstUser = _firstUser.get
         firstUser.name should equal("liusong")
 
-        val list = query.all[User](repository, UserMapper)
+        val list = query.all[User](UserMapper, repository)
         list.size should not be (0)
         //        list.foreach(user => println(user.name + "-" + user.age))
       }

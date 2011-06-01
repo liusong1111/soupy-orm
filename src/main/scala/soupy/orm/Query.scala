@@ -94,7 +94,7 @@ case class Query(val _from: String = null,
     this.copy(_where = the_where)
   }
 
-  def all[A](implicit repository:Repository, mapper:Mapper[A]):List[A] = {
+  def all[A](implicit mapper:Mapper[A], repository:Repository):List[A] = {
     val sql = repository.adapter.toSQL(this)
     var result = List[A]()
     repository.executeQuery(sql){ rs =>
@@ -104,7 +104,7 @@ case class Query(val _from: String = null,
     result
   }
 
-  def first[A](implicit repository:Repository, mapper:Mapper[A]):Option[A] = {
+  def first[A](implicit mapper:Mapper[A], repository:Repository):Option[A] = {
     val query = this.limit(1)
     val sql = repository.adapter.toSQL(query)
     var result:Option[A] = None
