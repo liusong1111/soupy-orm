@@ -21,4 +21,13 @@ class QuerySpec extends Spec with ShouldMatchers {
     val q = new Query("users").where("name like ?", "%liu").limit(20).offset(100)
     OracleAdapter.toSQL(q) should equal("select * from (select A.*, ROWNUM rn from (select *\nfrom users\nwhere name like ?) where ROWNUM <= 120) where rn >= 20)")
   }
+
+  it("toCountSql should be right"){
+    val q1 = new Query("users").where("name like ?", "%liu")
+    val q2 = new Query("users").where("name like ?", "%liu").limit(20).offset(100)
+    val sql1 = MysqlAdapter.toCountSQL(q1)
+    val sql2 = MysqlAdapter.toCountSQL(q2)
+    sql1 should equal(sql2)
+    sql1 should equal("select count(1)\nfrom users\nwhere name like ?")
+  }
 }

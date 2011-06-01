@@ -12,7 +12,6 @@ trait Adapter {
       Some("from " + query._from),
       query._join,
       query._where.map("where " + _.toSQL),
-      query._order.map("order by " + _),
       query._group.map("group by " + _),
       query._having.map("having " + _)
     ).filter(!_.isEmpty).map(_.get).mkString("\n")
