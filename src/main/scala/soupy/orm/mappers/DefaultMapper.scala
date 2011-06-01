@@ -11,10 +11,14 @@ class DefaultMapper[A:Manifest] extends Mapper[A]{
     val instance = clazz.newInstance
     val beanInfo = Introspector.getBeanInfo(clazz)
     for(val f <- beanInfo.getPropertyDescriptors){
-      val writter = f.getWriteMethod
-      writter.invoke(instance, rs.getObject(f.getName))
+      val writer = f.getWriteMethod
+      writer.invoke(instance, rs.getObject(f.getName))
     }
 
     instance.asInstanceOf[A]
   }
+}
+
+object DefaultMapper{
+  implicit def getDefaultMapper[A:Manifest]:Mapper[A] = new DefaultMapper[A]
 }

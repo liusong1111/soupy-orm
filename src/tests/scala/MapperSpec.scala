@@ -3,6 +3,7 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.Spec
 import reflect.BeanInfo
 import soupy.orm.adapters.MysqlAdapter
+import soupy.orm.mappers.DefaultMapper
 import soupy.orm.repositories.DefaultRepository
 import soupy.orm.{Mapper, Repository, Env, Query}
 
@@ -14,7 +15,7 @@ class User {
 
 class MapperSpec extends Spec with ShouldMatchers {
   describe("mappers") {
-    val repository = new DefaultRepository(MysqlAdapter, Map("database" -> "abc"))
+    implicit val repository: Repository = new DefaultRepository(MysqlAdapter, Map("database" -> "abc"))
 
     describe("customized mapper") {
       it("customized mapper should work correctly") {
@@ -31,13 +32,26 @@ class MapperSpec extends Spec with ShouldMatchers {
         _firstUser.isEmpty should be(false)
         val firstUser = _firstUser.get
         firstUser.name should equal("liusong")
+
+        val list = query.all[User](repository, UserMapper)
+        list.size should not be (0)
+        //        list.foreach(user => println(user.name + "-" + user.age))
       }
 
     }
 
     describe("DefaultMapper") {
-      it("should executeQuery correctly") {
+      it("executeQuery with implicit repository and DefaultMapper should work correctly") {
+        import DefaultMapper._
+        val query = new Query().from("users").where("name = 'liusong'")
+        val _firstUser = query.first[User]
+        _firstUser.isEmpty should be(false)
+        val firstUser = _firstUser.get
+        firstUser.name should equal("liusong")
 
+        val list = query.all[User]
+        list.size should not be (0)
+//        list.foreach(user => println(user.name + "-" + user.age))
       }
     }
   }
