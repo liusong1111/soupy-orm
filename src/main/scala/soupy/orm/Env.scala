@@ -9,9 +9,7 @@ object Env {
 
   val mode = config.getString("mode", "development")
 
-  def logger:Logger = {
-    Logger.get
-  }
+  def logger:Logger = Logger.get
 
   val db = config.getConfigMap("db").get.getConfigMap(mode).get
 
