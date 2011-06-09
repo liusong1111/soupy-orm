@@ -10,7 +10,7 @@ class DefaultMapper[A:Manifest] extends Mapper[A]{
     val clazz = manifest.erasure
     val instance = clazz.newInstance
     val beanInfo = Introspector.getBeanInfo(clazz)
-    for(val f <- beanInfo.getPropertyDescriptors){
+    for(f <- beanInfo.getPropertyDescriptors){
       val writer = f.getWriteMethod
       writer.invoke(instance, rs.getObject(f.getName))
     }
