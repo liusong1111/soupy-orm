@@ -18,7 +18,3 @@ class DefaultMapper[A:Manifest] extends Mapper[A]{
     instance.asInstanceOf[A]
   }
 }
-
-object DefaultMapper{
-  implicit def getDefaultMapper[A:Manifest]:Mapper[A] = new DefaultMapper[A]
-}

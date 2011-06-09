@@ -3,7 +3,6 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.Spec
 import reflect.BeanInfo
 import soupy.orm.adapters.MysqlAdapter
-import soupy.orm.mappers.DefaultMapper
 import soupy.orm.repositories.DefaultRepository
 import soupy.orm.{Mapper, Repository, Env, Query}
 
@@ -15,7 +14,7 @@ class User {
 
 class MapperSpec extends Spec with ShouldMatchers {
   describe("mappers") {
-    implicit val repository: Repository = new DefaultRepository(MysqlAdapter, Map("database" -> "abc"))
+    import Env._
 
     describe("customized mapper") {
       it("customized mapper should work correctly") {
@@ -42,7 +41,6 @@ class MapperSpec extends Spec with ShouldMatchers {
 
     describe("DefaultMapper") {
       it("executeQuery with implicit repository and DefaultMapper should work correctly") {
-        import DefaultMapper._
         val query = new Query().from("users").where("name = 'liusong'")
         val _firstUser = query.first[User]
         _firstUser.isEmpty should be(false)
