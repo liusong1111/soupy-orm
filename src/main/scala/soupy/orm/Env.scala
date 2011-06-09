@@ -12,11 +12,11 @@ object Env {
 
   def logger:Logger = Logger.get
 
-  val db = config.getConfigMap("db").get.getConfigMap(mode).get
-
   implicit def getDefaultMapper[A:Manifest]:Mapper[A] = new DefaultMapper[A]
   
   implicit val repository: Repository = {
+    val db = config.getConfigMap("db").get.getConfigMap(mode).get
+
     db.getString("repository").getOrElse("default") match {
       case _ => new soupy.orm.repositories.DefaultRepository(Adapter(db.getString("adapter", "mysql")),
         Map("database" -> db.getString("database").get,
