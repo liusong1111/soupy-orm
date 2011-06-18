@@ -8,12 +8,12 @@ trait Table extends TableDef {
   //  implicit val StringBuilder: PropertyBuilder[String, P[String]]
   override implicit val IntBuilder: AccessorBuilder[Int, Property[Int]] = IntPropertyBuilder
 
-  var properties = List[Property[Any]]()
+  var properties = List[Property[_]]()
 
   def property[T](name: String)(implicit builder: AccessorBuilder[T, Property[T]]): Property[T] = {
     val index = (properties.length + 1)
     val prop = builder(name, index)
-    properties = properties ::: List(prop.asInstanceOf[Property[Any]])
+    properties = properties ::: List(prop)
     prop
   }
 }
