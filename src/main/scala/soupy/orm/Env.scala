@@ -1,6 +1,6 @@
 package soupy.orm
 
-import mappers.DefaultMapper
+import mappers.ReflectMapper
 import net.lag.configgy.Configgy
 import net.lag.logging.Logger
 
@@ -12,7 +12,7 @@ object Env {
 
   def logger:Logger = Logger.get
 
-  implicit def getDefaultMapper[A:Manifest]:Mapper[A] = new DefaultMapper[A]
+  implicit def getDefaultMapper[A:Manifest]:Mapper[A] = new ReflectMapper[A]
   
   implicit val repository: Repository = {
     val db = config.getConfigMap("db").get.getConfigMap(mode).get

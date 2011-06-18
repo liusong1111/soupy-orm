@@ -39,8 +39,8 @@ class MapperSpec extends Spec with ShouldMatchers {
 
     }
 
-    describe("DefaultMapper") {
-      it("executeQuery with implicit repository and DefaultMapper should work correctly") {
+    describe("ReflectMapper") {
+      it("executeQuery with implicit repository and ReflectMapper should work correctly") {
         val query = new Query().from("users").where("name = 'liusong'")
         val _firstUser = query.first[User]
         _firstUser.isEmpty should be(false)
