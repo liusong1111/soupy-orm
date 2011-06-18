@@ -12,7 +12,7 @@ class User {
   var age: Int = 0
 }
 
-class MapperSpec extends Spec with ShouldMatchers {
+class ReflectMapperSpec extends Spec with ShouldMatchers {
   describe("mappers") {
     import Env._
 
