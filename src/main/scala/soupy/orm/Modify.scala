@@ -2,15 +2,15 @@ package soupy.orm
 
 import parts.Criteria
 import java.sql.{Statement, PreparedStatement}
-import javax.management.remote.rmi._RMIConnection_Stub
 import utils.SqlEncoder
 
 trait Modify {
+
   import Env._
-  
+
   def toSQL: String
 
-  def executeUpdate(implicit repository:Repository):Int = {
+  def executeUpdate(implicit repository: Repository): Int = {
     val sql = toSQL
     logger.debug(sql)
     val result = repository.executeUpdate(sql)
@@ -31,8 +31,10 @@ case class Delete(from: String, criteria: Option[Criteria] = None) extends Modif
   }
 }
 
-case class Insert(from: String, pairs:Pair[String, Any]*) extends Modify {
+case class Insert(from: String, pairs: Pair[String, Any]*) extends Modify {
+
   import Env._
+
   var generatedId: Long = -1L
 
   override def toSQL = {
@@ -42,11 +44,11 @@ case class Insert(from: String, pairs:Pair[String, Any]*) extends Modify {
     "insert into " + from + "(" + fields + ") values(" + values + ")"
   }
 
-  override def executeUpdate(implicit repository:Repository):Int = {
+  override def executeUpdate(implicit repository: Repository): Int = {
     val sql = toSQL
     logger.debug(sql)
     var result = false
-    repository.withinConnection{
+    repository.withinConnection {
       conn =>
         var st: PreparedStatement = null
         try {

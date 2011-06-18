@@ -1,10 +1,10 @@
+package orm
+
 import java.sql.ResultSet
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.Spec
 import reflect.BeanInfo
-import soupy.orm.adapters.MysqlAdapter
-import soupy.orm.repositories.DefaultRepository
-import soupy.orm.{Mapper, Repository, Env, Query}
+import soupy.orm.{Mapper, Env, Query}
 
 @BeanInfo
 class User {
@@ -34,6 +34,8 @@ class ReflectMapperSpec extends Spec with ShouldMatchers {
 
         val list = query.all[User](UserMapper, repository)
         list.size should not be (0)
+
+        query.count should not be (0)
         //        list.foreach(user => println(user.name + "-" + user.age))
       }
 
@@ -49,7 +51,7 @@ class ReflectMapperSpec extends Spec with ShouldMatchers {
 
         val list = query.all[User]
         list.size should not be (0)
-//        list.foreach(user => println(user.name + "-" + user.age))
+        //        list.foreach(user => println(user.name + "-" + user.age))
       }
     }
   }

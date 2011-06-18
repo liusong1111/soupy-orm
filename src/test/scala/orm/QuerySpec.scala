@@ -1,7 +1,9 @@
+package orm
+
 import org.scalatest.Spec
 import org.scalatest.matchers.ShouldMatchers
 import soupy.orm.adapters.{OracleAdapter, MysqlAdapter}
-import soupy.orm.{Env, Query}
+import soupy.orm.Query
 
 class QuerySpec extends Spec with ShouldMatchers {
   it("generic toSQL should be correct") {
@@ -12,17 +14,17 @@ class QuerySpec extends Spec with ShouldMatchers {
     sql1 should equal("select * from users where name like ?")
   }
 
-  it("mysql adapter should generate right sql with pagination"){
+  it("mysql adapter should generate right sql with pagination") {
     val q = new Query("users").where("name like ?", "%liu").limit(20).offset(100)
     MysqlAdapter.toSQL(q) should equal("select * from users where name like ? limit 20 offset 100")
   }
 
-  it("oracle adapter should generate right sql with pagination"){
+  it("oracle adapter should generate right sql with pagination") {
     val q = new Query("users").where("name like ?", "%liu").limit(20).offset(100)
     OracleAdapter.toSQL(q) should equal("select * from (select A.*, ROWNUM rn from (select * from users where name like ?) where ROWNUM <= 120) where rn >= 20)")
   }
 
-  it("toCountSql should be right"){
+  it("toCountSql should be right") {
     val q1 = new Query("users").where("name like ?", "%liu")
     val q2 = new Query("users").where("name like ?", "%liu").limit(20).offset(100)
     val sql1 = MysqlAdapter.toCountSQL(q1)

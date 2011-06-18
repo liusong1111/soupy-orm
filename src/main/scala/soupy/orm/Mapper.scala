@@ -2,6 +2,6 @@ package soupy.orm
 
 import java.sql.ResultSet
 
-abstract class Mapper[A:Manifest]{
-  def map(rs:ResultSet):A
+abstract class Mapper[A: ClassManifest] {
+  def map(rs: ResultSet): A
 }

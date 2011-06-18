@@ -4,7 +4,8 @@ import properties.IntValueBuilder
 
 trait Model extends TableDef {
   type R[T] = T
-  override implicit val IntBuilder: AccessorBuilder[Int, Int] = IntValueBuilder
+  //  override
+  implicit val IntBuilder: AccessorBuilder[Int, Int] = IntValueBuilder
 
   private var _indexCounter = 0
 

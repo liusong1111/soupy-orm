@@ -5,7 +5,7 @@ import java.lang.Exception
 
 trait Adapter {
   def toSQL(query: Query): String
-  
+
   def toCountSQL(query: Query): String = {
     val sql = List[Option[String]](
       Some("select count(1)"),
@@ -20,9 +20,9 @@ trait Adapter {
   }
 }
 
-object Adapter{
-  def apply(adapterName:String):Adapter = {
-    adapterName match{
+object Adapter {
+  def apply(adapterName: String): Adapter = {
+    adapterName match {
       case "mysql" => MysqlAdapter
       case "oracle" => OracleAdapter
       case _ => throw new Exception("adaper named \"" + adapterName + "\" not found")

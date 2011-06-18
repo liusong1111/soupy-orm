@@ -2,7 +2,7 @@ package soupy.orm.parts
 
 import soupy.orm.utils.SqlEncoder
 
-trait Criteria extends Part{
+trait Criteria extends Part {
   def where(criteria: Criteria) = {
     new AndCriteria(this, criteria)
   }
@@ -25,20 +25,26 @@ trait SimpleCriteria extends Criteria
 class NormalCriteria[A](val prop: String, val op: String, val value: A) extends SimpleCriteria {
   override def toSQL = prop + " " + op + " " + SqlEncoder.encode(value)
 
-  override def toPrepare:(String, List[_]) = {
+  override def toPrepare: (String, List[_]) = {
     val sql = prop + " " + op + " ? "
     val params = List(value)
     (sql, params)
   }
 }
 
-class EqualCriteria[A](override val prop:String, override val value:A) extends NormalCriteria(prop, "=", value)
-class NotEqualCriteria[A](override val prop:String, override val value:A) extends NormalCriteria(prop, "<>", value)
-class GreatThanCriteria[A](override val prop:String, override val value:A) extends NormalCriteria(prop, ">", value)
-class GreatEqualCriteria[A](override val prop:String, override val value:A) extends NormalCriteria(prop, ">=", value)
-class LessThanCriteria[A](override val prop:String, override val value:A) extends NormalCriteria(prop, "<", value)
-class LessEqualCriteria[A](override val prop:String, override val value:A) extends NormalCriteria(prop, "<=", value)
-class LikeCriteria[A](override val prop:String, override val value:A) extends NormalCriteria(prop, "like", value)
+class EqualCriteria[A](override val prop: String, override val value: A) extends NormalCriteria(prop, "=", value)
+
+class NotEqualCriteria[A](override val prop: String, override val value: A) extends NormalCriteria(prop, "<>", value)
+
+class GreatThanCriteria[A](override val prop: String, override val value: A) extends NormalCriteria(prop, ">", value)
+
+class GreatEqualCriteria[A](override val prop: String, override val value: A) extends NormalCriteria(prop, ">=", value)
+
+class LessThanCriteria[A](override val prop: String, override val value: A) extends NormalCriteria(prop, "<", value)
+
+class LessEqualCriteria[A](override val prop: String, override val value: A) extends NormalCriteria(prop, "<=", value)
+
+class LikeCriteria[A](override val prop: String, override val value: A) extends NormalCriteria(prop, "like", value)
 
 class IsNullCriteria(val prop: String) extends SimpleCriteria {
   override def toSQL = prop + " is null"
@@ -80,7 +86,7 @@ class AndCriteria(val criterias: Criteria*) extends CompositeCriteria {
       criteria => criteria.toPrepare._2
     }
 
-    val params = (List[Any]() /: _params)((a,b) => a ::: b)
+    val params = (List[Any]() /: _params)((a, b) => a ::: b)
 
     (stat, params)
   }
@@ -104,7 +110,7 @@ class OrCriteria(val criterias: Criteria*) extends CompositeCriteria {
       criteria => criteria.toPrepare._2
     }
 
-    val params = (List[Any]() /: _params)((a,b) => a ::: b)
+    val params = (List[Any]() /: _params)((a, b) => a ::: b)
 
     (stat, params)
   }
@@ -116,6 +122,7 @@ class RawCriteria(val sqlTemplate: String) extends SimpleCriteria {
 
 class ListRawCriteria(override val sqlTemplate: String, val args: List[_]) extends RawCriteria(sqlTemplate) {
   override def toSQL = sqlTemplate
+
   override def toPrepare = {
     (sqlTemplate, args)
   }

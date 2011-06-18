@@ -10,10 +10,10 @@ object Env {
 
   val mode = config.getString("mode", "development")
 
-  def logger:Logger = Logger.get
+  def logger: Logger = Logger.get
 
-  implicit def getDefaultMapper[A:Manifest]:Mapper[A] = new ReflectMapper[A]
-  
+  implicit def getDefaultMapper[A: ClassManifest]: Mapper[A] = new ReflectMapper[A]
+
   implicit val repository: Repository = {
     val db = config.getConfigMap("db").get.getConfigMap(mode).get
 

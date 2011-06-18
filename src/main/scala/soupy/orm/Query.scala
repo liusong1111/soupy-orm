@@ -39,7 +39,7 @@ case class Query(val _from: String = null,
     this.copy(_limit = Some(_limit))
   }
 
-  def paginate(page: Int = 1, pageSize:Int = 20): Query = {
+  def paginate(page: Int = 1, pageSize: Int = 20): Query = {
     val limit = pageSize
     val offset = (page - 1) * pageSize
 
@@ -62,16 +62,16 @@ case class Query(val _from: String = null,
     this.copy(_where = Some(the_where))
   }
 
-//  def where(_whereClause: String, args: Map[String, _]): Query = {
-//    val _where = new MapRawCriteria(_whereClause, args)
-//    val the_where = if (this._where.isEmpty) {
-//      _where
-//    } else {
-//      this._where.get.where(_where)
-//    }
-//
-//    this.copy(_where = Some(the_where))
-//  }
+  //  def where(_whereClause: String, args: Map[String, _]): Query = {
+  //    val _where = new MapRawCriteria(_whereClause, args)
+  //    val the_where = if (this._where.isEmpty) {
+  //      _where
+  //    } else {
+  //      this._where.get.where(_where)
+  //    }
+  //
+  //    this.copy(_where = Some(the_where))
+  //  }
 
   def where(_whereClause: String, args: Any*): Query = {
     val _where = new ListRawCriteria(_whereClause, args.toList)
@@ -94,22 +94,35 @@ case class Query(val _from: String = null,
     this.copy(_where = the_where)
   }
 
-  def all[A](implicit mapper:Mapper[A], repository:Repository):List[A] = {
+  def all[A](implicit mapper: Mapper[A], repository: Repository): List[A] = {
     val sql = repository.adapter.toSQL(this)
     var result = List[A]()
-    repository.executeQuery(sql){ rs =>
-      result = mapper.map(rs) :: result
+    repository.executeQuery(sql) {
+      rs =>
+        result = mapper.map(rs) :: result
     }
 
     result
   }
 
-  def first[A](implicit mapper:Mapper[A], repository:Repository):Option[A] = {
+  def first[A](implicit mapper: Mapper[A], repository: Repository): Option[A] = {
     val query = this.limit(1)
     val sql = repository.adapter.toSQL(query)
-    var result:Option[A] = None
-    repository.executeQuery(sql){ rs =>
-      result = Some(mapper.map(rs))
+    var result: Option[A] = None
+    repository.executeQuery(sql) {
+      rs =>
+        result = Some(mapper.map(rs))
+    }
+
+    result
+  }
+
+  def count(implicit repository: Repository): Int = {
+    val sql = repository.adapter.toCountSQL(this)
+    var result = 0
+    repository.executeQuery(sql) {
+      rs =>
+        result = rs.getInt(1)
     }
 
     result
