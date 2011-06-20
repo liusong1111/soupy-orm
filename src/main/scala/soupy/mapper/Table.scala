@@ -1,8 +1,9 @@
 package soupy.mapper
 
-import properties.IntPropertyBuilder
+import properties.{StringPropertyBuilder, DatePropertyBuilder, IntPropertyBuilder}
 import soupy.orm.{Mapper, Query}
 import java.sql.ResultSet
+import java.util.Date
 
 class Table[M: ClassManifest](val tableName: String) extends Mapper[M] with TableDef {
   type R[T] = Property[T]
@@ -10,6 +11,8 @@ class Table[M: ClassManifest](val tableName: String) extends Mapper[M] with Tabl
   //  implicit val StringBuilder: PropertyBuilder[String, P[String]]
   //  override
   implicit val IntBuilder: AccessorBuilder[Int, Property[Int]] = IntPropertyBuilder
+  implicit val StringBuilder: AccessorBuilder[String, Property[String]] = StringPropertyBuilder
+  implicit val DateBuilder: AccessorBuilder[Date, Property[Date]] = DatePropertyBuilder
 
   var properties = List[Property[Any]]()
 

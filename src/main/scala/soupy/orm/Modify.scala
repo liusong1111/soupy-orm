@@ -4,10 +4,9 @@ import parts.Criteria
 import java.sql.{Statement, PreparedStatement}
 import utils.SqlEncoder
 
+import Env._
+
 trait Modify {
-
-  import Env._
-
   def toSQL: String
 
   def executeUpdate(implicit repository: Repository): Int = {
@@ -32,9 +31,6 @@ case class Delete(from: String, criteria: Option[Criteria] = None) extends Modif
 }
 
 case class Insert(from: String, pairs: Pair[String, Any]*) extends Modify {
-
-  import Env._
-
   var generatedId: Long = -1L
 
   override def toSQL = {

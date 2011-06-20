@@ -4,7 +4,7 @@ import java.sql.ResultSet
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.Spec
 import reflect.BeanInfo
-import soupy.orm.{Mapper, Env, Query}
+import soupy.orm.{Mapper, Query}
 
 @BeanInfo
 class User {
@@ -14,7 +14,7 @@ class User {
 
 class ReflectMapperSpec extends Spec with ShouldMatchers {
   describe("mappers") {
-    import Env._
+    import config.Setting._
 
     describe("customized mapper") {
       it("customized mapper should work correctly") {

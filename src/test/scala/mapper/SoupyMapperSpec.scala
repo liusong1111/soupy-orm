@@ -4,8 +4,7 @@ import org.scalatest.Spec
 import org.scalatest.matchers.ShouldMatchers
 import soupy.mapper.{Table, Model, TableDef}
 import soupy.orm.adapters.MysqlAdapter
-
-import soupy.orm.Env
+import config.Setting
 
 trait UserDef extends TableDef {
   var age = property[Int]("age")
@@ -27,7 +26,7 @@ class SoupyMapperSpec extends Spec with ShouldMatchers {
     val query = User.q.where(User.age > 1)
     MysqlAdapter.toSQL(query) should equal("select age from users where age > 1")
 
-    implicit val repository = Env.repository
+    implicit val repository = Setting.repository
     implicit val U = User
 
     query.first[User].get.age > 1 should be(true)
