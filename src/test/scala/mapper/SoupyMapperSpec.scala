@@ -7,6 +7,7 @@ import soupy.orm.adapters.MysqlAdapter
 import config.Setting
 import reflect.BeanInfo
 
+//users
 trait UserDef extends TableDef {
   var age1 = property[Int]("age")
 }
@@ -15,11 +16,21 @@ trait UserDef extends TableDef {
 class User extends Model with UserDef{
 }
 
+//departments
+trait IDepartment extends TableDef{
+  var name = property[String]("name")
+}
+@BeanInfo class Department extends Model with IDepartment
 
 object `package`{
-  @BeanInfo
-  implicit object User extends Table[User]("users") with UserDef
+  @BeanInfo implicit object User extends Table[User]("users") with UserDef
+  @BeanInfo implicit object Department extends Table[Department]("departments") with IDepartment
 }
+
+
+
+
+
 
 class SoupyMapperSpec extends Spec with ShouldMatchers {
   it("define tables correctly") {
