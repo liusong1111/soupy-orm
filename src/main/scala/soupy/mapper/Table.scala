@@ -1,7 +1,7 @@
 package soupy.mapper
 
 import java.math.BigDecimal
-import properties.{BigDecimalPropertyBuilder, StringPropertyBuilder, DatePropertyBuilder, IntPropertyBuilder}
+import properties._
 import soupy.orm.{Mapper, Query}
 import java.sql.ResultSet
 import java.util.Date
@@ -10,6 +10,7 @@ class Table[M: ClassManifest](val tableName: String) extends Mapper[M] with Tabl
   type R[T] = Property[T]
 
   implicit val IntBuilder: AccessorBuilder[Int, Property[Int]] = IntPropertyBuilder
+  implicit val DoubleBuilder: AccessorBuilder[Double, Property[Double]] = DoublePropertyBuilder
   implicit val StringBuilder: AccessorBuilder[String, Property[String]] = StringPropertyBuilder
   implicit val DateBuilder: AccessorBuilder[Date, Property[Date]] = DatePropertyBuilder
   implicit val BigDecimalBuilder: AccessorBuilder[BigDecimal, Property[BigDecimal]] = BigDecimalPropertyBuilder
