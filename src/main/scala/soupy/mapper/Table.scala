@@ -8,8 +8,6 @@ import java.util.Date
 class Table[M: ClassManifest](val tableName: String) extends Mapper[M] with TableDef {
   type R[T] = Property[T]
 
-  //  implicit val StringBuilder: PropertyBuilder[String, P[String]]
-  //  override
   implicit val IntBuilder: AccessorBuilder[Int, Property[Int]] = IntPropertyBuilder
   implicit val StringBuilder: AccessorBuilder[String, Property[String]] = StringPropertyBuilder
   implicit val DateBuilder: AccessorBuilder[Date, Property[Date]] = DatePropertyBuilder
@@ -29,7 +27,7 @@ class Table[M: ClassManifest](val tableName: String) extends Mapper[M] with Tabl
   def map(rs: ResultSet): M = {
     val clazz = implicitly[ClassManifest[M]]
     val instance = clazz.erasure.newInstance.asInstanceOf[M]
-
+    implicit val self = this
     properties.foreach {
       prop =>
         val v = prop.read(rs)
