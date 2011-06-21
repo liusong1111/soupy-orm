@@ -1,9 +1,9 @@
 package soupy.mapper.properties
 
 import java.sql.{PreparedStatement, ResultSet}
-import soupy.mapper.{AccessorBuilder, Property}
+import soupy.mapper.{Table, AccessorBuilder, Property}
 
-class StringProperty(override val name: String, override val index: Int) extends Property[String](name, index) {
+class StringProperty[M:ClassManifest:Table](override val name: String, override val index: Int) extends Property[String, M](name, index) {
   override def read(rs: ResultSet): String = {
     rs.getString(index)
   }
@@ -13,13 +13,13 @@ class StringProperty(override val name: String, override val index: Int) extends
   }
 }
 
-object StringPropertyBuilder extends AccessorBuilder[String, StringProperty] {
-  override def apply(name: String, index: Int): StringProperty = {
-    new StringProperty(name, index)
+class StringPropertyBuilder[M:ClassManifest:Table] extends AccessorBuilder[String, StringProperty[M]] {
+  override def apply(name: String, index: Int): StringProperty[M] = {
+    new StringProperty[M](name, index)
   }
 }
 
-object StringValueBuilder extends AccessorBuilder[String, String] {
+class StringValueBuilder[M:ClassManifest] extends AccessorBuilder[String, String] {
   override def apply(name: String, index: Int): String = {
     ""
   }

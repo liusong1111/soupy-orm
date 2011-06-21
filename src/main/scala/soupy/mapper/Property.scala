@@ -4,12 +4,12 @@ import java.sql.{PreparedStatement, ResultSet}
 import soupy.orm.parts._
 import java.beans.Introspector
 
-abstract class Property[T: ClassManifest](val name: String, val index: Int) {
+abstract class Property[T: ClassManifest, M:ClassManifest:Table](val name: String, val index: Int) {
   def read(rs: ResultSet): T
 
   def write(ps: PreparedStatement, value: T)
 
-  def get[M](m: M)(implicit c: ClassManifest[M], t: Table[M]): T = {
+  def get(m: M): T = {
     lazy val getter = {
       val propertyDescriptor = getPropertyDescriptor(m)
       propertyDescriptor.getReadMethod
@@ -17,7 +17,7 @@ abstract class Property[T: ClassManifest](val name: String, val index: Int) {
     getter.invoke(m).asInstanceOf[T]
   }
 
-  def set[M](m: M, v: T)(implicit c: ClassManifest[M], t: Table[M]) = {
+  def set(m: M, v: T) = {
     lazy val setter = {
       val propertyDescriptor = getPropertyDescriptor(m)
       propertyDescriptor.getWriteMethod
@@ -33,10 +33,10 @@ abstract class Property[T: ClassManifest](val name: String, val index: Int) {
     val propertyName = Introspector.getBeanInfo(tableClazz).getPropertyDescriptors.flatMap {
       p =>
         val reader = p.getReadMethod.invoke(t)
-        if (!reader.isInstanceOf[Property[_]]) {
+        if (!reader.isInstanceOf[Property[_, M]]) {
           None
         } else {
-          val prop = reader.asInstanceOf[Property[_]]
+          val prop = reader.asInstanceOf[Property[_, M]]
           if(prop.name == name){
             Some(p.getName)
           }else{

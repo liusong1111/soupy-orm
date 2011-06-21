@@ -12,10 +12,14 @@ trait UserDef extends TableDef {
 }
 
 @BeanInfo
-class User extends Model with UserDef
+class User extends Model with UserDef{
+}
 
-@BeanInfo
-object User extends Table[User]("users") with UserDef
+
+object `package`{
+  @BeanInfo
+  implicit object User extends Table[User]("users") with UserDef
+}
 
 class SoupyMapperSpec extends Spec with ShouldMatchers {
   it("define tables correctly") {
@@ -30,8 +34,19 @@ class SoupyMapperSpec extends Spec with ShouldMatchers {
     MysqlAdapter.toSQL(query) should equal("select age from users where age > 1")
 
     implicit val repository = Setting.repository
-    implicit val U = User
+
 
     query.first[User].get.age1 > 1 should be(true)
+  }
+
+  it("insert correctly"){
+    implicit val repository = Setting.repository
+
+    val user = new User
+    user.age1 = 33
+    val beforeCount = User.q.count
+    user.insert
+    val afterCount = User.q.count
+    (afterCount - beforeCount) should be(1)
   }
 }

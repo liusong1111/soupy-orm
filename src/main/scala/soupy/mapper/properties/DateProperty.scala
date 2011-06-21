@@ -1,10 +1,10 @@
 package soupy.mapper.properties
 
-import soupy.mapper.{AccessorBuilder, Property}
 import java.sql.{PreparedStatement, ResultSet}
 import java.util.Date
+import soupy.mapper.{Table, AccessorBuilder, Property}
 
-class DateProperty(override val name: String, override val index: Int) extends Property[Date](name, index) {
+class DateProperty[M:ClassManifest:Table](override val name: String, override val index: Int) extends Property[Date, M](name, index) {
   override def read(rs: ResultSet): Date = {
     rs.getDate(index)
   }
@@ -14,13 +14,13 @@ class DateProperty(override val name: String, override val index: Int) extends P
   }
 }
 
-object DatePropertyBuilder extends AccessorBuilder[Date, DateProperty] {
-  override def apply(name: String, index: Int): DateProperty = {
-    new DateProperty(name, index)
+class DatePropertyBuilder[M:ClassManifest:Table] extends AccessorBuilder[Date, DateProperty[M]] {
+  override def apply(name: String, index: Int): DateProperty[M] = {
+    new DateProperty[M](name, index)
   }
 }
 
-object DateValueBuilder extends AccessorBuilder[Date, Date] {
+class DateValueBuilder[M:ClassManifest] extends AccessorBuilder[Date, Date] {
   override def apply(name: String, index: Int): Date = {
     new Date()
   }

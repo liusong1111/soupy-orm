@@ -7,20 +7,22 @@ import java.sql.ResultSet
 import java.util.Date
 
 class Table[M: ClassManifest](val tableName: String) extends Mapper[M] with TableDef {
-  type R[T] = Property[T]
+  implicit val self:Table[M] = this.asInstanceOf[Table[M]]
+  
+  type R[T] = Property[T, M]
 
-  implicit val IntBuilder: AccessorBuilder[Int, Property[Int]] = IntPropertyBuilder
-  implicit val DoubleBuilder: AccessorBuilder[Double, Property[Double]] = DoublePropertyBuilder
-  implicit val StringBuilder: AccessorBuilder[String, Property[String]] = StringPropertyBuilder
-  implicit val DateBuilder: AccessorBuilder[Date, Property[Date]] = DatePropertyBuilder
-  implicit val BigDecimalBuilder: AccessorBuilder[BigDecimal, Property[BigDecimal]] = BigDecimalPropertyBuilder
+  implicit val IntBuilder: AccessorBuilder[Int, Property[Int, M]] = new IntPropertyBuilder[M]
+  implicit val DoubleBuilder: AccessorBuilder[Double, Property[Double, M]] = new DoublePropertyBuilder[M]
+  implicit val StringBuilder: AccessorBuilder[String, Property[String, M]] = new StringPropertyBuilder[M]
+  implicit val DateBuilder: AccessorBuilder[Date, Property[Date, M]] = new DatePropertyBuilder[M]
+  implicit val BigDecimalBuilder: AccessorBuilder[BigDecimal, Property[BigDecimal, M]] = new BigDecimalPropertyBuilder[M]
 
-  var properties = List[Property[Any]]()
+  var properties = List[Property[Any, M]]()
 
-  def property[T](name: String)(implicit builder: AccessorBuilder[T, Property[T]]): Property[T] = {
+  def property[T](name: String)(implicit builder: AccessorBuilder[T, Property[T, M]]): Property[T, M] = {
     val index = (properties.length + 1)
     val prop = builder(name, index)
-    properties = properties ::: List(prop.asInstanceOf[Property[Any]])
+    properties = properties ::: List(prop.asInstanceOf[Property[Any, M]])
     prop
   }
 
@@ -30,7 +32,6 @@ class Table[M: ClassManifest](val tableName: String) extends Mapper[M] with Tabl
   def map(rs: ResultSet): M = {
     val clazz = implicitly[ClassManifest[M]]
     val instance = clazz.erasure.newInstance.asInstanceOf[M]
-    implicit val self = this
     properties.foreach {
       prop =>
         val v = prop.read(rs)
