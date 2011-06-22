@@ -23,7 +23,11 @@ abstract class Property[T: ClassManifest, M:ClassManifest:Table](val name: Strin
       propertyDescriptor.getWriteMethod
     }
 
-    setter.invoke(m, v.asInstanceOf[Object])
+    if(v == null){
+      setter.invoke(m, null)
+    }else{
+      setter.invoke(m, v.asInstanceOf[Object])
+    }
   }
 
   private def getPropertyDescriptor[M](m: M)(implicit c: ClassManifest[M], t: Table[M]) = {
