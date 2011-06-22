@@ -30,11 +30,6 @@ object `package`{
   @BeanInfo implicit object Department extends Table[Department]("departments") with IDepartment
 }
 
-
-
-
-
-
 class SoupyMapperSpec extends Spec with ShouldMatchers {
   it("define tables correctly") {
 
