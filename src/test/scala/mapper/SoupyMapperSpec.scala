@@ -6,10 +6,13 @@ import soupy.mapper.{Table, Model, TableDef}
 import soupy.orm.adapters.MysqlAdapter
 import config.Setting
 import reflect.BeanInfo
+import java.util.Date
 
 //users
 trait UserDef extends TableDef {
+  var name = property[String]("name")
   var age1 = property[Int]("age")
+  var createdAt = property[Date]("created_at")
 }
 
 @BeanInfo
@@ -42,7 +45,7 @@ class SoupyMapperSpec extends Spec with ShouldMatchers {
     User.age1.name should equal("age")
 
     val query = User.q.where(User.age1 > 1)
-    MysqlAdapter.toSQL(query) should equal("select age from users where age > 1")
+    MysqlAdapter.toSQL(query) should equal("select name,age,created_at from users where age > 1")
 
     implicit val repository = Setting.repository
 
