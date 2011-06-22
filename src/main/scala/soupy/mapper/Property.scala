@@ -3,35 +3,29 @@ package soupy.mapper
 import java.sql.{PreparedStatement, ResultSet}
 import soupy.orm.parts._
 import java.beans.Introspector
+import java.lang.RuntimeException
 
-abstract class Property[T: ClassManifest, M:ClassManifest:Table](val name: String, val index: Int) {
+abstract class Property[T: ClassManifest, M: ClassManifest : Table](val name: String, val index: Int) {
   def read(rs: ResultSet): T
 
   def write(ps: PreparedStatement, value: T)
 
+  lazy val propertyName = getPropertyName
+  lazy val propertyDescriptor = getPropertyDescriptor
+
+  lazy val getter = propertyDescriptor.getReadMethod
+  lazy val setter = propertyDescriptor.getWriteMethod
+
   def get(m: M): T = {
-    lazy val getter = {
-      val propertyDescriptor = getPropertyDescriptor(m)
-      propertyDescriptor.getReadMethod
-    }
     getter.invoke(m).asInstanceOf[T]
   }
 
   def set(m: M, v: T) = {
-    lazy val setter = {
-      val propertyDescriptor = getPropertyDescriptor(m)
-      propertyDescriptor.getWriteMethod
-    }
-
-    if(v == null){
-      setter.invoke(m, null)
-    }else{
-      setter.invoke(m, v.asInstanceOf[Object])
-    }
+    setter.invoke(m, v.asInstanceOf[Object])
   }
 
-  private def getPropertyDescriptor[M](m: M)(implicit c: ClassManifest[M], t: Table[M]) = {
-    val clazz = c.erasure
+  private def getPropertyName = {
+    val t = implicitly[Table[M]]
     val tableClazz = t.getClass
     Introspector.getBeanInfo(tableClazz).getPropertyDescriptors.foreach(p => p.getName)
     val propertyName = Introspector.getBeanInfo(tableClazz).getPropertyDescriptors.flatMap {
@@ -41,15 +35,25 @@ abstract class Property[T: ClassManifest, M:ClassManifest:Table](val name: Strin
           None
         } else {
           val prop = reader.asInstanceOf[Property[_, M]]
-          if(prop.name == name){
+          if (prop.name == name) {
             Some(p.getName)
-          }else{
+          } else {
             None
           }
         }
     }.head
 
-    Introspector.getBeanInfo(clazz).getPropertyDescriptors.find(p => p.getName == propertyName).get
+    propertyName
+  }
+
+  private def getPropertyDescriptor = {
+    val clazz = implicitly[ClassManifest[M]].erasure
+    val result = Introspector.getBeanInfo(clazz).getPropertyDescriptors.find(p => p.getName == propertyName).get
+    if ((result.getWriteMethod eq null) || (result.getReadMethod eq null)) {
+      throw new RuntimeException("please ensure the property[" + propertyName + "] is defined as a var")
+    }
+
+    result
   }
 
 
