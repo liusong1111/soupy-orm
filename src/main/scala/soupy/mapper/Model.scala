@@ -5,7 +5,7 @@ import java.math.BigDecimal
 import properties._
 import soupy.orm.{Insert, Repository}
 
-class Model extends TableDef {
+trait Model extends TableDef {
   type R[T] = T
 
   //  override
