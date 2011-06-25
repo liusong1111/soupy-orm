@@ -3,23 +3,22 @@ package soupy.mapper
 import properties._
 import soupy.orm.utils.SqlEncoder
 import soupy.orm.{Update, Insert, Repository}
+import java.util.Date
+import java.math.BigDecimal
 
 trait Model extends TableDef {
   type R[T] = T
-  override type Builder[T] = ValueBuilder[T]
+  type Builder[T] = ValueBuilder[T]
 
   //  override
-  implicit val IntBuilder = IntValueBuilder
-  implicit val DoubleBuilder = DoubleValueBuilder
-  implicit val StringBuilder = StringValueBuilder
-  implicit val DateBuilder = DateValueBuilder
-  implicit val BigDecimalBuilder = BigDecimalValueBuilder
-
-  private var _indexCounter = 0
+  implicit val IntBuilder = new ValueBuilder[Int](0)
+  implicit val DoubleBuilder = new ValueBuilder[Double](0.0)
+  implicit val StringBuilder = new ValueBuilder[String]("")
+  implicit val DateBuilder = new ValueBuilder[Date](new Date())
+  implicit val BigDecimalBuilder = new ValueBuilder[BigDecimal](new BigDecimal("0.0"))
 
   def property[T](columnName: String)(implicit builder: Builder[T]): T = {
-    _indexCounter += 1
-    builder(columnName, _indexCounter)
+    builder.defaultValue
   }
 
   def insert[M >: this.type](implicit t: Table[M], repository: Repository): Int = {

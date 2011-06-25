@@ -13,7 +13,3 @@ object DatePropertyAccessor extends PropertyAccessor[Date]{
     ps.setDate(index, new java.sql.Date(value.getTime))
   }
 }
-
-object DateValueBuilder extends ValueBuilder[Date] {
-  def defaultValue : Date = new Date()
-}

@@ -12,7 +12,3 @@ object IntPropertyAccessor extends PropertyAccessor[Int] {
     ps.setInt(index, value)
   }
 }
-
-object IntValueBuilder extends ValueBuilder[Int] {
-  def defaultValue: Int = 0
-}

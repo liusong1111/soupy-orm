@@ -12,8 +12,3 @@ object StringPropertyAccessor extends PropertyAccessor[String] {
     ps.setString(index, value)
   }
 }
-
-
-object StringValueBuilder extends ValueBuilder[String] {
-  def defaultValue = ""
-}

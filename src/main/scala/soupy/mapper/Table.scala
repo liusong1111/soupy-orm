@@ -1,12 +1,13 @@
 package soupy.mapper
 
 import java.math.BigDecimal
-import properties._
 import soupy.orm.{Mapper, Query}
 import java.sql.ResultSet
 import java.util.Date
 
 class Table[M: ClassManifest](val tableName: String) extends Mapper[M] with TableDef {
+  import soupy.mapper.properties._
+  
   implicit val self: Table[M] = this.asInstanceOf[Table[M]]
 
   type R[T] = Property[T, M]

@@ -13,7 +13,3 @@ object BigDecimalPropertyAccessor extends PropertyAccessor[BigDecimal]{
     ps.setBigDecimal(index, value)
   }
 }
-
-object BigDecimalValueBuilder extends ValueBuilder[BigDecimal] {
-  def defaultValue: BigDecimal = new BigDecimal("0.0")
-}

@@ -12,7 +12,3 @@ object DoublePropertyAccessor extends PropertyAccessor[Double] {
     ps.setDouble(index, value)
   }
 }
-
-object DoubleValueBuilder extends ValueBuilder[Double] {
-  def defaultValue:Double = 0.0
-}

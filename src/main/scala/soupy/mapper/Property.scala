@@ -12,7 +12,7 @@ trait PropertyAccessor[T] {
 }
 
 class Property[T: ClassManifest : PropertyAccessor, M: ClassManifest : Table](val name: String,
-                                                                                       val index: Int) {
+                                                                              val index: Int) {
   val table = implicitly[Table[M]]
   private val propertyAccessor = implicitly[PropertyAccessor[T]]
 
