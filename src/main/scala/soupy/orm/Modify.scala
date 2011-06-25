@@ -4,16 +4,11 @@ import parts.Criteria
 import java.sql.{Statement, PreparedStatement}
 import utils.SqlEncoder
 
-import Env._
-
 trait Modify {
   def toSQL: String
 
   def executeUpdate(implicit repository: Repository): Int = {
-    val sql = toSQL
-    logger.debug(sql)
-    val result = repository.executeUpdate(sql)
-    result
+    SQL(toSQL).executeUpdate(repository)
   }
 }
 
@@ -31,7 +26,7 @@ case class Delete(from: String, criteria: Option[Criteria] = None) extends Modif
 }
 
 case class Insert(from: String, pairs: Pair[String, Any]*) extends Modify {
-  var generatedId: Long = -1L
+//  var generatedId: Long = -1L
 
   override def toSQL = {
     val fields = pairs.map(_._1).mkString(", ")
@@ -40,31 +35,31 @@ case class Insert(from: String, pairs: Pair[String, Any]*) extends Modify {
     "insert into " + from + "(" + fields + ") values(" + values + ")"
   }
 
-  override def executeUpdate(implicit repository: Repository): Int = {
-    val sql = toSQL
-    logger.debug(sql)
-    var result = false
-    repository.withinConnection {
-      conn =>
-        var st: PreparedStatement = null
-        try {
-          st = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
-          result = st.executeUpdate != 0
-          val ret = st.getGeneratedKeys
-          if (ret.next) {
-            generatedId = ret.getLong(1)
-          } else {
-            result = false
-          }
-        } finally {
-          try {
-            st.close
-          } catch {
-            case _ => None
-          }
-        }
-    }
-
-    generatedId.toInt
-  }
+//  override def executeUpdate(implicit repository: Repository): Int = {
+//    val sql = toSQL
+//    logger.debug(sql)
+//    var result = false
+//    repository.withinConnection {
+//      conn =>
+//        var st: PreparedStatement = null
+//        try {
+//          st = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+//          result = st.executeUpdate != 0
+//          val ret = st.getGeneratedKeys
+//          if (ret.next) {
+//            generatedId = ret.getLong(1)
+//          } else {
+//            result = false
+//          }
+//        } finally {
+//          try {
+//            st.close
+//          } catch {
+//            case _ => None
+//          }
+//        }
+//    }
+//
+//    generatedId.toInt
+//  }
 }

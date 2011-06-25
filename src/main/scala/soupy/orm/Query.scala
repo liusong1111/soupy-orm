@@ -1,5 +1,6 @@
 package soupy.orm
 
+import mappers.IntMapper
 import parts._
 
 case class Query(val _from: String = null,
@@ -95,36 +96,14 @@ case class Query(val _from: String = null,
   }
 
   def all[A](implicit mapper: Mapper[A], repository: Repository): List[A] = {
-    val sql = repository.adapter.toSQL(this)
-    var result = List[A]()
-    repository.executeQuery(sql) {
-      rs =>
-        result = mapper.map(rs) :: result
-    }
-
-    result
+    SQL(repository.adapter.toSQL(this)).all[A](mapper, repository)
   }
 
   def first[A](implicit mapper: Mapper[A], repository: Repository): Option[A] = {
-    val query = this.limit(1)
-    val sql = repository.adapter.toSQL(query)
-    var result: Option[A] = None
-    repository.executeQuery(sql) {
-      rs =>
-        result = Some(mapper.map(rs))
-    }
-
-    result
+    SQL(repository.adapter.toSQL(this.limit(1))).first[A](mapper, repository)
   }
 
   def count(implicit repository: Repository): Int = {
-    val sql = repository.adapter.toCountSQL(this)
-    var result = 0
-    repository.executeQuery(sql) {
-      rs =>
-        result = rs.getInt(1)
-    }
-
-    result
+    SQL(repository.adapter.toCountSQL(this)).first(IntMapper, repository).get
   }
 }

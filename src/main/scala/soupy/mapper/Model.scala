@@ -31,12 +31,30 @@ trait Model extends TableDef {
     id
   }
 
-//  def update[M >: this.type](implicit t: Table[M], repository: Repository): Int = {
-//    val table = t.asInstanceOf[Table[this.type]]
-//    val pairs = table.properties.map(p => p.name -> p.get(this))
-//    val insert = Insert(table.tableName, pairs:_*)
-//    val id = insert.executeUpdate
-//
-//    id
-//  }
+  def update[M >: this.type](implicit t: Table[M], repository: Repository): Int = {
+    val table = t.asInstanceOf[Table[this.type]]
+    val pairs = table.properties.map(p => p.name -> p.get(this))
+    val insert = Insert(table.tableName, pairs:_*)
+    val id = insert.executeUpdate
+
+    id
+  }
+
+  def destroy[M >: this.type](implicit t: Table[M], repository: Repository): Int = {
+    val table = t.asInstanceOf[Table[this.type]]
+    val pairs = table.properties.map(p => p.name -> p.get(this))
+    val insert = Insert(table.tableName, pairs:_*)
+    val id = insert.executeUpdate
+
+    id
+  }
+
+  def save[M >: this.type](implicit t: Table[M], repository: Repository): Int = {
+    val table = t.asInstanceOf[Table[this.type]]
+    val pairs = table.properties.map(p => p.name -> p.get(this))
+    val insert = Insert(table.tableName, pairs:_*)
+    val id = insert.executeUpdate
+
+    id
+  }
 }

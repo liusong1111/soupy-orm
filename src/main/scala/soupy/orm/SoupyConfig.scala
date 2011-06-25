@@ -1,19 +1,21 @@
 package soupy.orm
 
+import mappers.ReflectMapper
 import net.lag.configgy.Configgy
 import net.lag.logging.Logger
 
-object Env {
-  Configgy.configure(getClass.getResource("/env.conf").getPath)
-//  Configgy.configure(getClass.getClassLoader.getResource("/env.conf").getPath)
-  val config = Configgy.config
+object SoupyConfig extends SoupyConfig
 
-  val mode = config.getString("mode", "development")
+class SoupyConfig {
+  Configgy.configure(getClass.getResource("/env.conf").getPath)
+  val config = Configgy.config
 
   def logger: Logger = Logger.get
 
+//  val mode = config.getString("mode", "development")
+//
 //  implicit def getDefaultMapper[A: ClassManifest]: Mapper[A] = new ReflectMapper[A]
-
+//
 //  implicit val repository: Repository = {
 //    val db = config.getConfigMap("db").get.getConfigMap(mode).get
 //
@@ -26,3 +28,4 @@ object Env {
 //    }
 //  }
 }
+
