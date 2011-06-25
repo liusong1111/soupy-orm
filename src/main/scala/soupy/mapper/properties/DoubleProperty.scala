@@ -1,7 +1,7 @@
 package soupy.mapper.properties
 
 import java.sql.{PreparedStatement, ResultSet}
-import soupy.mapper.{Table, AccessorBuilder, Property}
+import soupy.mapper._
 
 class DoubleProperty[M:ClassManifest:Table](override val name: String, override val index: Int) extends Property[Double, M](name, index) {
   override def read(rs: ResultSet): Double = {
@@ -13,14 +13,12 @@ class DoubleProperty[M:ClassManifest:Table](override val name: String, override 
   }
 }
 
-class DoublePropertyBuilder[M:ClassManifest:Table] extends AccessorBuilder[Double, DoubleProperty[M]] {
+class DoublePropertyBuilder[M:ClassManifest:Table] extends PropertyBuilder[Double, DoubleProperty[M]] {
   override def apply(name: String, index: Int): DoubleProperty[M] = {
     new DoubleProperty[M](name, index)
   }
 }
 
-class DoubleValueBuilder[M:ClassManifest] extends AccessorBuilder[Double, Double] {
-  override def apply(name: String, index: Int): Double = {
-    0.0
-  }
+class DoubleValueBuilder[M:ClassManifest] extends ValueBuilder[Double] {
+  def defaultValue:Double = 0.0
 }

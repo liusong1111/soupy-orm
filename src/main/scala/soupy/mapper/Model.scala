@@ -3,7 +3,8 @@ package soupy.mapper
 import java.util.Date
 import java.math.BigDecimal
 import properties._
-import soupy.orm.{Insert, Repository}
+import soupy.orm.utils.SqlEncoder
+import soupy.orm.{Update, Insert, Repository}
 
 trait Model extends TableDef {
   type R[T] = T
@@ -34,7 +35,13 @@ trait Model extends TableDef {
   def update[M >: this.type](implicit t: Table[M], repository: Repository): Int = {
     val table = t.asInstanceOf[Table[this.type]]
     val pairs = table.properties.map(p => p.name -> p.get(this))
-    val insert = Insert(table.tableName, pairs:_*)
+    val sets = (for((propName,propValue) <- pairs)yield(propName + "=" + SqlEncoder.encode(propValue))).mkString(",")
+    val insert = Update(table.tableName, sets)
+
+    val fields = pairs.map(_._1).mkString(", ")
+    val values = pairs.map(_._2).map(SqlEncoder.encode(_)).mkString(", ")
+
+
     val id = insert.executeUpdate
 
     id

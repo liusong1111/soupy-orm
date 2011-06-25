@@ -2,7 +2,7 @@ package soupy.mapper.properties
 
 import java.sql.{PreparedStatement, ResultSet}
 import java.math.BigDecimal
-import soupy.mapper.{Table, AccessorBuilder, Property}
+import soupy.mapper._
 
 class BigDecimalProperty[M:ClassManifest:Table](override val name: String, override val index: Int) extends Property[BigDecimal, M](name, index) {
   override def read(rs: ResultSet): BigDecimal = {
@@ -14,14 +14,12 @@ class BigDecimalProperty[M:ClassManifest:Table](override val name: String, overr
   }
 }
 
-class BigDecimalPropertyBuilder[M:ClassManifest:Table] extends AccessorBuilder[BigDecimal, BigDecimalProperty[M]] {
+class BigDecimalPropertyBuilder[M:ClassManifest:Table] extends PropertyBuilder[BigDecimal, BigDecimalProperty[M]] {
   override def apply(name: String, index: Int): BigDecimalProperty[M] = {
     new BigDecimalProperty[M](name, index)
   }
 }
 
-class BigDecimalValueBuilder[M:ClassManifest] extends AccessorBuilder[BigDecimal, BigDecimal] {
-  override def apply(name: String, index: Int): BigDecimal = {
-    new BigDecimal("0.0")
-  }
+class BigDecimalValueBuilder[M:ClassManifest] extends ValueBuilder[BigDecimal] {
+  def defaultValue: BigDecimal = new BigDecimal("0.0")
 }
