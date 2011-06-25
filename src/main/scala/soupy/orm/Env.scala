@@ -1,6 +1,5 @@
 package soupy.orm
 
-import mappers.ReflectMapper
 import net.lag.configgy.Configgy
 import net.lag.logging.Logger
 

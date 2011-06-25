@@ -2,7 +2,7 @@ package soupy.orm
 
 import java.sql.{PreparedStatement, ResultSet, Connection}
 
-abstract class Repository(val adapter: Adapter, val settings: Map[String, String]) {
+abstract class Repository(val adapter: Adapter, val settings: Map[String, String] = Map()) {
   val logger = Env.logger
 
   // Repository is alias of ConnectionProvider
