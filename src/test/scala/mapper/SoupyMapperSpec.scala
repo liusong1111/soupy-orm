@@ -10,7 +10,7 @@ import java.util.Date
 
 //users
 trait UserDef extends TableDef {
-  var name = property[String]("name")
+  var name = property[String]("name", Some("姓名"))
   var age1 = property[Int]("age")
   var createdAt = property[Date]("created_at")
 }
@@ -38,6 +38,9 @@ class SoupyMapperSpec extends Spec with ShouldMatchers {
     user.age1 should equal(32)
 
     User.age1.columnName should equal("age")
+
+    User.name.title should equal(Some("姓名"))
+    User.age1.title should  be(None)
 
     val query = User.q.where(User.age1 > 1)
     MysqlAdapter.toSQL(query) should equal("select name,age,created_at from users where age > 1")

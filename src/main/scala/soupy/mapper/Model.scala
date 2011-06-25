@@ -1,6 +1,5 @@
 package soupy.mapper
 
-import properties._
 import soupy.orm.utils.SqlEncoder
 import soupy.orm.{Update, Insert, Repository}
 import java.util.Date
@@ -17,7 +16,7 @@ trait Model extends TableDef {
   implicit val DateBuilder = new ValueBuilder[Date](new Date())
   implicit val BigDecimalBuilder = new ValueBuilder[BigDecimal](new BigDecimal("0.0"))
 
-  def property[T](columnName: String)(implicit builder: Builder[T]): T = {
+  override def property[T](columnName: String, title: Option[String] = None)(implicit builder: Builder[T]): T = {
     builder.defaultValue
   }
 

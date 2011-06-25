@@ -13,5 +13,5 @@ trait TableDef {
   implicit val DoubleBuilder: Builder[Double]
   implicit val BigDecimalBuilder: Builder[BigDecimal]
 
-  def property[T](columnName: String)(implicit builder: Builder[T]): R[T]
+  def property[T](columnName: String, title:Option[String] = None)(implicit builder: Builder[T]): R[T]
 }
