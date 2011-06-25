@@ -9,17 +9,17 @@ trait Model extends TableDef {
   override type Builder[T] = ValueBuilder[T]
 
   //  override
-  implicit val IntBuilder = new IntValueBuilder[this.type]
-  implicit val DoubleBuilder = new DoubleValueBuilder[this.type]
-  implicit val StringBuilder = new StringValueBuilder[this.type]
-  implicit val DateBuilder = new DateValueBuilder[this.type]
-  implicit val BigDecimalBuilder = new BigDecimalValueBuilder[this.type]
+  implicit val IntBuilder = IntValueBuilder
+  implicit val DoubleBuilder = DoubleValueBuilder
+  implicit val StringBuilder = StringValueBuilder
+  implicit val DateBuilder = DateValueBuilder
+  implicit val BigDecimalBuilder = BigDecimalValueBuilder
 
   private var _indexCounter = 0
 
-  def property[T](name: String)(implicit builder: Builder[T]): T = {
+  def property[T](columnName: String)(implicit builder: Builder[T]): T = {
     _indexCounter += 1
-    builder(name, _indexCounter)
+    builder(columnName, _indexCounter)
   }
 
   def insert[M >: this.type](implicit t: Table[M], repository: Repository): Int = {

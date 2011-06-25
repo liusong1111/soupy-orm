@@ -5,7 +5,7 @@ import java.math.BigDecimal
 
 trait TableDef {
   type R[T]
-  type Builder[T] <: AccessorBuilder[T, R[T]]
+  type Builder[T] // <: AccessorBuilder[T, R[T]]
 
   implicit val IntBuilder: Builder[Int]
   implicit val StringBuilder: Builder[String]
@@ -13,5 +13,5 @@ trait TableDef {
   implicit val DoubleBuilder: Builder[Double]
   implicit val BigDecimalBuilder: Builder[BigDecimal]
 
-  def property[T](name: String)(implicit builder: Builder[T]): R[T]
+  def property[T](columnName: String)(implicit builder: Builder[T]): R[T]
 }

@@ -5,10 +5,24 @@ import soupy.orm.parts._
 import java.beans.Introspector
 import java.lang.RuntimeException
 
-abstract class Property[T: ClassManifest, M: ClassManifest : Table](val name: String, val index: Int) {
-  def read(rs: ResultSet): T
+trait PropertyAccessor[T] {
+  def read(rs: ResultSet, index: Int): T
 
-  def write(ps: PreparedStatement, value: T)
+  def write(ps: PreparedStatement, index: Int, value: T)
+}
+
+class Property[T: ClassManifest : PropertyAccessor, M: ClassManifest : Table](val name: String,
+                                                                                       val index: Int) {
+  val table = implicitly[Table[M]]
+  private val propertyAccessor = implicitly[PropertyAccessor[T]]
+
+  def read(rs: ResultSet): T = {
+    propertyAccessor.read(rs, index)
+  }
+
+  def write(ps: PreparedStatement, value: T): Unit = {
+    propertyAccessor.write(ps, index, value)
+  }
 
   lazy val propertyName = getPropertyName
   lazy val propertyDescriptor = getPropertyDescriptor

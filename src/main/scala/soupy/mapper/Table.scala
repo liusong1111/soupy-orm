@@ -10,19 +10,19 @@ class Table[M: ClassManifest](val tableName: String) extends Mapper[M] with Tabl
   implicit val self: Table[M] = this.asInstanceOf[Table[M]]
 
   type R[T] = Property[T, M]
-  type Builder[T] = PropertyBuilder[T, R[T]]
+  type Builder[T] = PropertyBuilder[T, M]
 
-  implicit val IntBuilder: Builder[Int] = new IntPropertyBuilder[M]
-  implicit val DoubleBuilder: Builder[Double] = new DoublePropertyBuilder[M]
-  implicit val StringBuilder: Builder[String] = new StringPropertyBuilder[M]
-  implicit val DateBuilder: Builder[Date] = new DatePropertyBuilder[M]
-  implicit val BigDecimalBuilder: Builder[BigDecimal] = new BigDecimalPropertyBuilder[M]
+  implicit val IntBuilder: Builder[Int] = new PropertyBuilder[Int, M]
+  implicit val DoubleBuilder: Builder[Double] = new PropertyBuilder[Double, M]
+  implicit val StringBuilder: Builder[String] = new PropertyBuilder[String, M]
+  implicit val DateBuilder: Builder[Date] = new PropertyBuilder[Date, M]
+  implicit val BigDecimalBuilder: Builder[BigDecimal] = new PropertyBuilder[BigDecimal, M]
 
   var properties = List[Property[Any, M]]()
 
-  def property[T](name: String)(implicit builder: Builder[T]): Property[T, M] = {
+  def property[T](columnName: String)(implicit builder: Builder[T]): Property[T, M] = {
     val index = (properties.length + 1)
-    val prop = builder(name, index)
+    val prop = builder(columnName, index)
     properties = properties ::: List(prop.asInstanceOf[Property[Any, M]])
     prop
   }
