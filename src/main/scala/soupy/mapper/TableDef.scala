@@ -5,12 +5,13 @@ import java.math.BigDecimal
 
 trait TableDef {
   type R[T]
+  type Builder[T] <: AccessorBuilder[T, R[T]]
 
-  implicit val IntBuilder: AccessorBuilder[Int, R[Int]]
-  implicit val StringBuilder: AccessorBuilder[String, R[String]]
-  implicit val DateBuilder: AccessorBuilder[Date, R[Date]]
-  implicit val DoubleBuilder: AccessorBuilder[Double, R[Double]]
-  implicit val BigDecimalBuilder: AccessorBuilder[BigDecimal, R[BigDecimal]]
+  implicit val IntBuilder: Builder[Int]
+  implicit val StringBuilder: Builder[String]
+  implicit val DateBuilder: Builder[Date]
+  implicit val DoubleBuilder: Builder[Double]
+  implicit val BigDecimalBuilder: Builder[BigDecimal]
 
-  def property[T](name: String)(implicit builder: AccessorBuilder[T, R[T]]): R[T]
+  def property[T](name: String)(implicit builder: Builder[T]): R[T]
 }

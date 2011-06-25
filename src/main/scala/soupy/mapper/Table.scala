@@ -7,19 +7,20 @@ import java.sql.ResultSet
 import java.util.Date
 
 class Table[M: ClassManifest](val tableName: String) extends Mapper[M] with TableDef {
-  implicit val self:Table[M] = this.asInstanceOf[Table[M]]
-  
-  type R[T] = Property[T, M]
+  implicit val self: Table[M] = this.asInstanceOf[Table[M]]
 
-  implicit val IntBuilder: AccessorBuilder[Int, Property[Int, M]] = new IntPropertyBuilder[M]
-  implicit val DoubleBuilder: AccessorBuilder[Double, Property[Double, M]] = new DoublePropertyBuilder[M]
-  implicit val StringBuilder: AccessorBuilder[String, Property[String, M]] = new StringPropertyBuilder[M]
-  implicit val DateBuilder: AccessorBuilder[Date, Property[Date, M]] = new DatePropertyBuilder[M]
-  implicit val BigDecimalBuilder: AccessorBuilder[BigDecimal, Property[BigDecimal, M]] = new BigDecimalPropertyBuilder[M]
+  type R[T] = Property[T, M]
+  type Builder[T] = PropertyBuilder[T, R[T]]
+
+  implicit val IntBuilder: Builder[Int] = new IntPropertyBuilder[M]
+  implicit val DoubleBuilder: Builder[Double] = new DoublePropertyBuilder[M]
+  implicit val StringBuilder: Builder[String] = new StringPropertyBuilder[M]
+  implicit val DateBuilder: Builder[Date] = new DatePropertyBuilder[M]
+  implicit val BigDecimalBuilder: Builder[BigDecimal] = new BigDecimalPropertyBuilder[M]
 
   var properties = List[Property[Any, M]]()
 
-  def property[T](name: String)(implicit builder: AccessorBuilder[T, Property[T, M]]): Property[T, M] = {
+  def property[T](name: String)(implicit builder: Builder[T]): Property[T, M] = {
     val index = (properties.length + 1)
     val prop = builder(name, index)
     properties = properties ::: List(prop.asInstanceOf[Property[Any, M]])
