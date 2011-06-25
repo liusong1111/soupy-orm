@@ -11,7 +11,8 @@ trait PropertyAccessor[T] {
   def write(ps: PreparedStatement, index: Int, value: T)
 }
 
-class Property[T: ClassManifest : PropertyAccessor, M: ClassManifest : Table](val name: String,
+class Property[T: ClassManifest : PropertyAccessor, M: ClassManifest : Table](val columnName: String,
+//                                                                              val label: String,
                                                                               val index: Int) {
   val table = implicitly[Table[M]]
   private val propertyAccessor = implicitly[PropertyAccessor[T]]
@@ -49,7 +50,7 @@ class Property[T: ClassManifest : PropertyAccessor, M: ClassManifest : Table](va
           None
         } else {
           val prop = reader.asInstanceOf[Property[_, M]]
-          if (prop.name == name) {
+          if (prop.columnName == columnName) {
             Some(p.getName)
           } else {
             None
@@ -72,28 +73,28 @@ class Property[T: ClassManifest : PropertyAccessor, M: ClassManifest : Table](va
 
 
   //criteria
-  def >(value: T) = new NormalCriteria(this.name, ">", value)
+  def >(value: T) = new NormalCriteria(this.columnName, ">", value)
 
-  def >=(value: T) = new NormalCriteria(this.name, ">=", value)
+  def >=(value: T) = new NormalCriteria(this.columnName, ">=", value)
 
-  def <(value: T) = new NormalCriteria(this.name, "<", value)
+  def <(value: T) = new NormalCriteria(this.columnName, "<", value)
 
-  def <=(value: T) = new NormalCriteria(this.name, "<=", value)
+  def <=(value: T) = new NormalCriteria(this.columnName, "<=", value)
 
-  def ==(value: T) = new NormalCriteria(this.name, "=", value)
+  def ==(value: T) = new NormalCriteria(this.columnName, "=", value)
 
-  def !=(value: T) = new NormalCriteria(this.name, "<>", value)
+  def !=(value: T) = new NormalCriteria(this.columnName, "<>", value)
 
-  def isNull = new IsNullCriteria(this.name)
+  def isNull = new IsNullCriteria(this.columnName)
 
-  def isNotNull = new IsNotNullCriteria(this.name)
+  def isNotNull = new IsNotNullCriteria(this.columnName)
 
-  def in(values: List[T]) = new InCriteria(this.name, values)
+  def in(values: List[T]) = new InCriteria(this.columnName, values)
 
-  def like(value: String) = new LikeCriteria(this.name, value)
+  def like(value: String) = new LikeCriteria(this.columnName, value)
 
   //order
-  def asc = this.name + " ASC"
+  def asc = this.columnName + " ASC"
 
-  def desc = this.name + " DESC"
+  def desc = this.columnName + " DESC"
 }

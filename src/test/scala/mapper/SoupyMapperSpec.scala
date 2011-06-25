@@ -37,7 +37,7 @@ class SoupyMapperSpec extends Spec with ShouldMatchers {
     user.age1 = 32
     user.age1 should equal(32)
 
-    User.age1.name should equal("age")
+    User.age1.columnName should equal("age")
 
     val query = User.q.where(User.age1 > 1)
     MysqlAdapter.toSQL(query) should equal("select name,age,created_at from users where age > 1")

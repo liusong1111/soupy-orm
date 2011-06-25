@@ -23,7 +23,7 @@ trait Model extends TableDef {
 
   def insert[M >: this.type](implicit t: Table[M], repository: Repository): Int = {
     val table = t.asInstanceOf[Table[this.type]]
-    val pairs = table.properties.map(p => p.name -> p.get(this))
+    val pairs = table.properties.map(p => p.columnName -> p.get(this))
     val insert = Insert(table.tableName, pairs: _*)
     val id = insert.executeUpdate
 
@@ -32,7 +32,7 @@ trait Model extends TableDef {
 
   def update[M >: this.type](implicit t: Table[M], repository: Repository): Int = {
     val table = t.asInstanceOf[Table[this.type]]
-    val pairs = table.properties.map(p => p.name -> p.get(this))
+    val pairs = table.properties.map(p => p.columnName -> p.get(this))
     val sets = (for ((propName, propValue) <- pairs) yield (propName + "=" + SqlEncoder.encode(propValue))).mkString(",")
     val insert = Update(table.tableName, sets)
 
@@ -47,7 +47,7 @@ trait Model extends TableDef {
 
   def destroy[M >: this.type](implicit t: Table[M], repository: Repository): Int = {
     val table = t.asInstanceOf[Table[this.type]]
-    val pairs = table.properties.map(p => p.name -> p.get(this))
+    val pairs = table.properties.map(p => p.columnName -> p.get(this))
     val insert = Insert(table.tableName, pairs: _*)
     val id = insert.executeUpdate
 
@@ -56,7 +56,7 @@ trait Model extends TableDef {
 
   def save[M >: this.type](implicit t: Table[M], repository: Repository): Int = {
     val table = t.asInstanceOf[Table[this.type]]
-    val pairs = table.properties.map(p => p.name -> p.get(this))
+    val pairs = table.properties.map(p => p.columnName -> p.get(this))
     val insert = Insert(table.tableName, pairs: _*)
     val id = insert.executeUpdate
 

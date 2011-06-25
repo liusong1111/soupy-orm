@@ -28,7 +28,7 @@ class Table[M: ClassManifest](val tableName: String) extends Mapper[M] with Tabl
     prop
   }
 
-  lazy val columnsString = properties.map(_.name).mkString(",")
+  lazy val columnsString = properties.map(_.columnName).mkString(",")
 
   //mapper
   def map(rs: ResultSet): M = {
