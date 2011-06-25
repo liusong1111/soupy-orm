@@ -3,9 +3,7 @@ package soupy.view
 import xml.{Attribute, Text, Null}
 import soupy.mapper.Property
 
-class TableFor[T](list: Seq[T], tableId: String = "") {
-  val showRule = true
-
+class TableFor[T](list: Seq[T], tableId: String = "", showRule:Boolean = true) {
   var columns = List[Column[T, Any]]()
 
   def column[V](title: String, content: T => V, options: Map[String, String] = Map[String, String]()) {
