@@ -3,8 +3,9 @@ package soupy.view
 import xml.{Attribute, Text, Null}
 import soupy.mapper.Property
 
-
 class TableFor[T](list: Seq[T], tableId: String = "") {
+  val showRule = true
+
   var columns = List[Column[T, Any]]()
 
   def column[V](title: String, content: T => V, options: Map[String, String] = Map[String, String]()) {
@@ -36,7 +37,9 @@ class TableFor[T](list: Seq[T], tableId: String = "") {
         {renderTitleRow}
       </thead>
       <tbody>
-        {list.map(item => renderDataRow(item))}
+        {list.zipWithIndex.collect {
+        case (item, index) => renderDataRow(item, index)
+      }}
       </tbody>
     </table>
 
@@ -49,15 +52,21 @@ class TableFor[T](list: Seq[T], tableId: String = "") {
 
   def renderTitleRow = {
     <tr>
-      {columns.map(column => <th>
+      {if (showRule) {
+      <th>序号</th>
+    }}{columns.map(column => <th>
       {column.title}
     </th>)}
     </tr>
   }
 
-  def renderDataRow(item: T) = {
+  def renderDataRow(item: T, index: Int) = {
     var row = <tr>
-      {columns.map(column => renderDataCell(item, column))}
+      {if (showRule) {
+        <td>
+          {index + 1}
+        </td>
+      }}{columns.map(column => renderDataCell(item, column))}
     </tr>
 
     for (carriedProperty <- carriedProperties) {
