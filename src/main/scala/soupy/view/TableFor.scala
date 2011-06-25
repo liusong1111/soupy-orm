@@ -3,7 +3,7 @@ package soupy.view
 import xml.{Attribute, Text, Null}
 import soupy.mapper.Property
 
-class TableFor[T](list: Seq[T], tableId: String = "", showRule:Boolean = true) {
+class TableFor[T](list: Seq[T], tableId: String = "", showRule: Boolean = true) {
   var columns = List[Column[T, Any]]()
 
   def column[V](title: String, content: T => V, options: Map[String, String] = Map[String, String]()) {
@@ -80,7 +80,12 @@ class TableFor[T](list: Seq[T], tableId: String = "", showRule:Boolean = true) {
 
   def renderDataCell[V](item: T, column: Column[T, V]) = {
     var cell = <td>
-      {column.content(item)}
+      {if (column.options.getOrElse("editable", "") != "")
+        <div class="editableWrapper">
+          {column.content(item)}
+        </div>
+      else
+        column.content(item)}
     </td>
 
     for ((key, value) <- column.options) {
