@@ -28,6 +28,8 @@ class TableFor[T](list: Seq[T], tableId: String = "") {
     carriedProperties = properties.toList
   }
 
+  override def toString = toHTML.toString
+
   def toHTML = {
     var elem = <table class="tableFor">
       <thead>
