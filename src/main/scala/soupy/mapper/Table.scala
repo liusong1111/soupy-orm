@@ -7,7 +7,7 @@ import java.util.Date
 
 class Table[M: ClassManifest](val tableName: String) extends Mapper[M] with TableDef {
   import soupy.mapper.properties._
-  
+
   implicit val self: Table[M] = this.asInstanceOf[Table[M]]
 
   type R[T] = Property[T, M]
@@ -21,11 +21,15 @@ class Table[M: ClassManifest](val tableName: String) extends Mapper[M] with Tabl
 
   var properties = List[Property[Any, M]]()
 
-  override def property[T](columnName: String, title: Option[String] = None)(implicit builder: Builder[T]): Property[T, M] = {
+  override def property[T](columnName: String, title: Option[String] = None, primary: Boolean = false)(implicit builder: Builder[T]): Property[T, M] = {
     val index = (properties.length + 1)
-    val prop = builder(index, columnName, title)
+    val prop = builder(index, columnName, title, primary)
     properties = properties ::: List(prop.asInstanceOf[Property[Any, M]])
     prop
+  }
+
+  lazy val primaryProperties = {
+    properties.filter(property => property.primary)
   }
 
   lazy val columnsString = properties.map(_.columnName).mkString(",")

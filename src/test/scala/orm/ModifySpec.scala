@@ -14,14 +14,14 @@ class ModifySpec extends Spec with ShouldMatchers {
   it("update should be correct") {
     var s = new Update("users", "age = 22")
     s.toSQL should equal("update users set age = 22")
-    s = new Update("users", "age = 22", Some(new LikeCriteria("name", "%liu%")))
+    s = new Update("users", "age = 22", Some("name like '%liu%'"))
     s.toSQL should equal("update users set age = 22 where name like '%liu%'")
   }
 
   it("delete should be correct") {
     var s = new Delete("users")
     s.toSQL should equal("delete users")
-    s = new Delete("users", Some(new LikeCriteria("name", "%liu%")))
+    s = new Delete("users", Some("name like '%liu%'"))
     s.toSQL should equal("delete users where name like '%liu%'")
   }
 }
