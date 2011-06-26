@@ -6,8 +6,8 @@ import soupy.mapper.Property
 class TableFor[T](list: Seq[T], tableId: String = "", showRule: Boolean = true) {
   var columns = List[Column[T, Any]]()
 
-  def column[V](title: String, content: T => V, options: Map[String, String] = Map[String, String]()) {
-    columns = columns ::: List(Column(title, content, options))
+  def column[V](title: String, content: T => V, propertyName: Option[String] = None, options: Map[String, String] = Map[String, String]()) {
+    columns = columns ::: List(Column(title, content, propertyName, options))
   }
 
   def column[PT](property: Property[PT, T]) {
@@ -18,7 +18,7 @@ class TableFor[T](list: Seq[T], tableId: String = "", showRule: Boolean = true) 
   def column[PT](property: Property[PT, T], options: Map[String, String]) {
     val title = property.title.getOrElse("")
     def content(m: T): PT = property.get(m)
-    columns = columns ::: List(Column(title, content, options))
+    columns = columns ::: List(Column(title, content, Some(property.propertyName), options))
   }
 
   var carriedProperties = List[Property[_, T]]()
@@ -52,7 +52,7 @@ class TableFor[T](list: Seq[T], tableId: String = "", showRule: Boolean = true) 
     <tr>
       {if (showRule) {
       <th>序号</th>
-    }}{columns.map(column => <th>
+    }}{columns.map(column => <th data-propertyName={column.propertyName.getOrElse("")}>
       {column.title}
     </th>)}
     </tr>
@@ -100,4 +100,6 @@ class TableFor[T](list: Seq[T], tableId: String = "", showRule: Boolean = true) 
 
 case class Column[T, +V](title: String,
                          content: T => V,
-                         options: Map[String, String] = Map[String, String]())
+                         propertyName: Option[String] = None,
+                         options: Map[String, String] = Map()
+                          )
