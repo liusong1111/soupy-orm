@@ -9,6 +9,9 @@ trait Model extends TableDef {
   type R[T] = T
   type Builder[T] = ValueBuilder[T]
 
+  type M >: this.type
+//  val t = implicitly[Table[M]]
+
   //  override
   implicit val IntBuilder = new ValueBuilder[Int](0)
   implicit val DoubleBuilder = new ValueBuilder[Double](0.0)

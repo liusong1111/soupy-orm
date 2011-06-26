@@ -11,9 +11,11 @@ trait PropertyAccessor[T] {
   def write(ps: PreparedStatement, index: Int, value: T)
 }
 
-class Property[T: ClassManifest : PropertyAccessor, M: ClassManifest : Table](val columnName: String,
-                                                                              val title: Option[String],
-                                                                              val index: Int) {
+class Property[T: ClassManifest : PropertyAccessor, M: ClassManifest : Table](val index: Int,
+                                                                              val columnName: String,
+                                                                              val title: Option[String] = None
+//                                                                              val primary:Boolean = false
+                                                                              ) {
   val table = implicitly[Table[M]]
   private val propertyAccessor = implicitly[PropertyAccessor[T]]
 
