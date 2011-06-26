@@ -6,6 +6,22 @@ import java.lang.Exception
 trait Adapter {
   def toSQL(query: Query): String
 
+  def toDeleteSQL(query: Query): String = {
+    assert(query._limit.isEmpty)
+    assert(query._offset.isEmpty)
+
+    val sql = List[Option[String]](
+      Some("delete from " + query._from),
+      query._join,
+      query._where.map("where " + _.toSQL),
+      query._order.map("order by " + _),
+      query._group.map("group by " + _),
+      query._having.map("having " + _)
+    ).filter(!_.isEmpty).map(_.get).mkString(" ")
+
+    sql
+  }
+
   def toCountSQL(query: Query): String = {
     val sql = List[Option[String]](
       Some("select count(1)"),

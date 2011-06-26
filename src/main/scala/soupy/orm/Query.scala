@@ -106,4 +106,8 @@ case class Query(val _from: String = null,
   def count(implicit repository: Repository): Int = {
     SQL(repository.adapter.toCountSQL(this)).first(IntMapper, repository).get
   }
+
+  def destroyAll(implicit repository: Repository): Int = {
+    SQL(repository.adapter.toDeleteSQL(this)).executeUpdate(repository)
+  }
 }

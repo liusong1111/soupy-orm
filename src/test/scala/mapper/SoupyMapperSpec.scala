@@ -7,68 +7,50 @@ import soupy.orm.adapters.MysqlAdapter
 import config.Setting
 import reflect.BeanInfo
 import java.util.Date
+import soupy.orm.SQL
 
 //users
 trait UserDef extends TableDef {
-  var name = property[String]("name", Some("姓名"))
+  var name = property[String]("name", title = Some("姓名"))
   var age1 = property[Int]("age", primary = true)
-  var createdAt = property[Date]("created_at")
 }
 
 @BeanInfo
-class User extends Model with UserDef {
-}
-
-//departments
-trait IDepartment extends TableDef {
-  var name = property[String]("name")
-}
-
-@BeanInfo class Department extends Model with IDepartment
+class User extends Model with UserDef
 
 object `package` {
 
   @BeanInfo implicit object User extends Table[User]("users") with UserDef
 
-  @BeanInfo implicit object Department extends Table[Department]("departments") with IDepartment
-
 }
 
 class SoupyMapperSpec extends Spec with ShouldMatchers {
-  it("define tables correctly") {
+  implicit val repository = Setting.repository
+
+  it("query") {
 
     val user = new User
     user.age1 = 32
     user.age1 should equal(32)
 
     User.age1.columnName should equal("age")
-
     User.name.title should equal(Some("姓名"))
     User.age1.title should be(None)
 
     val query = User.q.where(User.age1 > 1)
-    MysqlAdapter.toSQL(query) should equal("select name,age,created_at from users where age > 1")
-
-    implicit val repository = Setting.repository
-
+    MysqlAdapter.toSQL(query) should equal("select name,age from users where age > 1")
 
     query.first[User].get.age1 > 1 should be(true)
   }
 
-  it("insert correctly") {
-    implicit val repository = Setting.repository
-
-    val user = new User
-    user.age1 = 33
-    val beforeCount = User.q.count
-    user.insert
-    val afterCount = User.q.count
-    (afterCount - beforeCount) should be(1)
+  it("select by SQL"){
+    User.columnsString should equal("name,age")
+    val sql = SQL("select " + User.columnsString + " from users where age > 1")
+    val user = sql.first[User].get
+    (user.age1 > 1) should be(true)
   }
 
-  it("update correctly") {
-    implicit val repository = Setting.repository
-
+  it("insert, update, destroy, save") {
     var id = new Date().getTime.toInt
 
     //insert
@@ -117,5 +99,13 @@ class SoupyMapperSpec extends Spec with ShouldMatchers {
     u6.name should equal("after save")
     u6.isNew should be(false)
     (afterCount - beforeCount) should be(0)
+
+    //destroyAll
+    val u7 = new User
+    u7.age1 = new Date().getTime.toInt
+    u7.save
+
+    User.q.where(User.age1 == u7.age1).destroyAll
+    User.q.where(User.age1 == u7.age1).count should be(0)
   }
 }
