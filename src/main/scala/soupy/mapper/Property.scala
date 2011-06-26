@@ -13,8 +13,8 @@ trait PropertyAccessor[T] {
 
 class Property[T: ClassManifest : PropertyAccessor, M: ClassManifest : Table](val index: Int,
                                                                               val columnName: String,
-                                                                              val title: Option[String] = None
-//                                                                              val primary:Boolean = false
+                                                                              val title: Option[String] = None,
+                                                                              val primary:Boolean = false
                                                                               ) {
   val table = implicitly[Table[M]]
   private val propertyAccessor = implicitly[PropertyAccessor[T]]

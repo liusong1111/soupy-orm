@@ -23,7 +23,7 @@ class Table[M: ClassManifest](val tableName: String) extends Mapper[M] with Tabl
 
   override def property[T](columnName: String, title: Option[String] = None)(implicit builder: Builder[T]): Property[T, M] = {
     val index = (properties.length + 1)
-    val prop = builder(columnName, title, index)
+    val prop = builder(index, columnName, title)
     properties = properties ::: List(prop.asInstanceOf[Property[Any, M]])
     prop
   }
