@@ -6,8 +6,6 @@ import java.sql.ResultSet
 import java.util.Date
 
 class Table[M: ClassManifest](val tableName: String) extends Mapper[M] with TableDef {
-  import soupy.mapper.properties._
-
   implicit val self: Table[M] = this.asInstanceOf[Table[M]]
 
   type R[T] = Property[T, M]
@@ -38,6 +36,8 @@ class Table[M: ClassManifest](val tableName: String) extends Mapper[M] with Tabl
   def map(rs: ResultSet): M = {
     val clazz = implicitly[ClassManifest[M]]
     val instance = clazz.erasure.newInstance.asInstanceOf[M]
+    val m = instance.asInstanceOf[Model]
+    m.isNew = false
     properties.foreach {
       prop =>
         val v = prop.read(rs)

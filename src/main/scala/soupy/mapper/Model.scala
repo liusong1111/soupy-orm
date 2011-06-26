@@ -9,6 +9,8 @@ trait Model extends TableDef {
   type R[T] = T
   type Builder[T] = ValueBuilder[T]
 
+  var isNew: Boolean = true
+
   //  override
   implicit val IntBuilder = new ValueBuilder[Int](0)
   implicit val DoubleBuilder = new ValueBuilder[Double](0.0)
@@ -24,9 +26,12 @@ trait Model extends TableDef {
     val table = t.asInstanceOf[Table[this.type]]
     val pairs = table.properties.map(p => p.columnName -> p.get(this))
     val insert = Insert(table.tableName, pairs: _*)
-    val id = insert.executeUpdate
 
-    id
+    val result = insert.executeUpdate
+
+    this.isNew = false
+
+    result
   }
 
   def update[M >: this.type](implicit t: Table[M], repository: Repository): Int = {
@@ -37,7 +42,10 @@ trait Model extends TableDef {
     val where = table.primaryProperties.map(property => property.columnName + " = " + SqlEncoder.encode(property.get(this))).mkString(" AND ")
     val insert = Update(table.tableName, sets, Some(where))
 
-    insert.executeUpdate
+    val result = insert.executeUpdate
+    this.isNew = false
+
+    result
   }
 
   def destroy[M >: this.type](implicit t: Table[M], repository: Repository): Int = {
@@ -50,11 +58,10 @@ trait Model extends TableDef {
   }
 
   def save[M >: this.type](implicit t: Table[M], repository: Repository): Int = {
-    val table = t.asInstanceOf[Table[this.type]]
-    val pairs = table.properties.map(p => p.columnName -> p.get(this))
-    val insert = Insert(table.tableName, pairs: _*)
-    val id = insert.executeUpdate
-
-    id
+    if(this.isNew){
+      this.insert(t, repository)
+    }else{
+      this.update(t, repository)
+    }
   }
 }
