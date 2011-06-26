@@ -20,8 +20,8 @@ class ModifySpec extends Spec with ShouldMatchers {
 
   it("delete should be correct") {
     var s = new Delete("users")
-    s.toSQL should equal("delete users")
+    s.toSQL should equal("delete from users")
     s = new Delete("users", Some("name like '%liu%'"))
-    s.toSQL should equal("delete users where name like '%liu%'")
+    s.toSQL should equal("delete from users where name like '%liu%'")
   }
 }

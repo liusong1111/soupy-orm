@@ -1,10 +1,9 @@
 package soupy.mapper
 
 import soupy.orm.utils.SqlEncoder
-import soupy.orm.{Update, Insert, Repository}
 import java.util.Date
 import java.math.BigDecimal
-import soupy.orm.parts.{EqualCriteria, Criteria}
+import soupy.orm.{Delete, Update, Insert, Repository}
 
 trait Model extends TableDef {
   type R[T] = T
@@ -34,20 +33,20 @@ trait Model extends TableDef {
     val table = t.asInstanceOf[Table[this.type]]
     val pairs = table.properties.map(p => p.columnName -> p.get(this))
     val sets = (for ((propName, propValue) <- pairs) yield (propName + "=" + SqlEncoder.encode(propValue))).mkString(",")
-    val criteria = table.primaryProperties.map(property => property.columnName + " = " + SqlEncoder.encode(property.get(this)))
-    var where = if(criteria.isEmpty) None else Some(criteria.mkString(" AND "))
-    val insert = Update(table.tableName, sets, where)
+    assert(!table.primaryProperties.isEmpty)
+    val where = table.primaryProperties.map(property => property.columnName + " = " + SqlEncoder.encode(property.get(this))).mkString(" AND ")
+    val insert = Update(table.tableName, sets, Some(where))
 
     insert.executeUpdate
   }
 
   def destroy[M >: this.type](implicit t: Table[M], repository: Repository): Int = {
     val table = t.asInstanceOf[Table[this.type]]
-    val pairs = table.properties.map(p => p.columnName -> p.get(this))
-    val insert = Insert(table.tableName, pairs: _*)
-    val id = insert.executeUpdate
+    assert(!table.primaryProperties.isEmpty)
+    val where = table.primaryProperties.map(property => property.columnName + " = " + SqlEncoder.encode(property.get(this))).mkString(" AND ")
+    val delete = Delete(table.tableName, Some(where))
 
-    id
+    delete.executeUpdate
   }
 
   def save[M >: this.type](implicit t: Table[M], repository: Repository): Int = {

@@ -19,7 +19,7 @@ case class Update(from: String, sets: String, where: Option[String] = None) exte
 
 case class Delete(from: String, where: Option[String] = None) extends Modify {
   override def toSQL = {
-    "delete " + from + (if (where.isEmpty) "" else (" where " + where.get))
+    "delete from " + from + (if (where.isEmpty) "" else (" where " + where.get))
   }
 }
 

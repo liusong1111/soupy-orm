@@ -85,5 +85,11 @@ class SoupyMapperSpec extends Spec with ShouldMatchers {
 
     val u2 = User.q.where(User.age1 == id).first[User].get
     u2.name should equal("after update")
+
+    u2.destroy
+
+    val u3 = User.q.where(User.age1 == id).first[User]
+    u3.isEmpty should be(true)
+    
   }
 }
