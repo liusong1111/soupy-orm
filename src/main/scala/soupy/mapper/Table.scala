@@ -4,7 +4,6 @@ import java.math.BigDecimal
 import soupy.orm.{Mapper, Query}
 import java.sql.ResultSet
 import java.util.Date
-
 class Table[M: ClassManifest](val tableName: String) extends Mapper[M] with TableDef {
   implicit val self: Table[M] = this.asInstanceOf[Table[M]]
 
@@ -50,5 +49,13 @@ class Table[M: ClassManifest](val tableName: String) extends Mapper[M] with Tabl
   //for convenience
   def q = {
     Query(tableName).select("select " + columnsString)
+  }
+
+  def fillByMap(m: M, map: Map[String, String], _properties:Option[List[Property[Any, M]]] = None) = {
+    val properties = _properties.getOrElse(this.properties)
+    properties.foreach{ property =>
+      val propertyValue = property.decode(map.getOrElse(property.propertyName, ""))
+      property.set(m, propertyValue)
+    }
   }
 }

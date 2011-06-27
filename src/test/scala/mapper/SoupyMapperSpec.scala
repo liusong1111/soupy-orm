@@ -41,9 +41,16 @@ class SoupyMapperSpec extends Spec with ShouldMatchers {
     MysqlAdapter.toSQL(query) should equal("select name,age from users where age > 1")
 
     query.first[User].get.age1 > 1 should be(true)
+
+    val u1 = new User
+    val data = Map("name" -> "sliu", "age1" -> "32")
+    u1.fillByMap(data)
+    u1.name should equal("sliu")
+    u1.age1 should be(32)
+
   }
 
-  it("select by SQL"){
+  it("select by SQL") {
     User.columnsString should equal("name,age")
     val sql = SQL("select " + User.columnsString + " from users where age > 1")
     val user = sql.first[User].get

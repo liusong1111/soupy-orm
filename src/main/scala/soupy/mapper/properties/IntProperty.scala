@@ -11,4 +11,8 @@ object IntPropertyAccessor extends PropertyAccessor[Int] {
   override def write(ps: PreparedStatement, index:Int, value: Int) = {
     ps.setInt(index, value)
   }
+
+  override def encode(value: Int): String = value.toString
+
+  override def decode(value: String): Int = value.toInt
 }

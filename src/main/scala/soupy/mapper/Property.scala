@@ -9,13 +9,17 @@ trait PropertyAccessor[T] {
   def read(rs: ResultSet, index: Int): T
 
   def write(ps: PreparedStatement, index: Int, value: T)
+
+  def encode(value: T): String
+
+  def decode(value: String): T
 }
 
 class Property[T: ClassManifest : PropertyAccessor, M: ClassManifest : Table](val index: Int,
                                                                               val columnName: String,
                                                                               val title: Option[String] = None,
-                                                                              val primary:Boolean = false
-                                                                              ) {
+                                                                              val primary: Boolean = false
+                                                                               ) {
   val table = implicitly[Table[M]]
   private val propertyAccessor = implicitly[PropertyAccessor[T]]
 
@@ -26,6 +30,10 @@ class Property[T: ClassManifest : PropertyAccessor, M: ClassManifest : Table](va
   def write(ps: PreparedStatement, value: T): Unit = {
     propertyAccessor.write(ps, index, value)
   }
+
+  def encode(value: T): String = propertyAccessor.encode(value)
+
+  def decode(value: String): T = propertyAccessor.decode(value)
 
   lazy val propertyName = getPropertyName
   lazy val propertyDescriptor = getPropertyDescriptor

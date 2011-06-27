@@ -64,4 +64,9 @@ trait Model extends TableDef {
       this.update(t, repository)
     }
   }
+
+  //----
+  def fillByMap[M >: this.type](map: Map[String, String], _properties:Option[List[Property[Any, M]]] = None)(implicit t: Table[M]) = {
+      t.fillByMap(this, map, _properties)
+  }
 }
