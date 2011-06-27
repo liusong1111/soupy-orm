@@ -4,8 +4,9 @@ import soupy.orm.utils.SqlEncoder
 import java.util.Date
 import java.math.BigDecimal
 import soupy.orm.{Delete, Update, Insert, Repository}
+import java.io.Serializable
 
-trait Model extends TableDef {
+trait Model extends TableDef with Serializable {
   type R[T] = T
   type Builder[T] = ValueBuilder[T]
 
