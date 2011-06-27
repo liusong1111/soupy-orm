@@ -2,10 +2,12 @@ package orm
 
 import org.scalatest.Spec
 import org.scalatest.matchers.ShouldMatchers
-import soupy.orm.parts.LikeCriteria
 import soupy.orm.{Delete, Update, Insert}
+import soupy.orm.adapters.MysqlAdapter
 
 class ModifySpec extends Spec with ShouldMatchers {
+  implicit val adapter = MysqlAdapter
+  
   it("insert should be correct") {
     var s = new Insert("users", "name" -> "liusong", "age" -> 22)
     s.toSQL should equal("insert into users(name, age) values('liusong', 22)")

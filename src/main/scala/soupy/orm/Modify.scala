@@ -3,22 +3,22 @@ package soupy.orm
 import utils.SqlEncoder
 
 trait Modify {
-  def toSQL: String
+  def toSQL(implicit adapter:Adapter): String
 
   def executeUpdate(implicit repository: Repository): Int = {
-    SQL(toSQL).executeUpdate(repository)
+    SQL(toSQL(repository.adapter)).executeUpdate(repository)
   }
 }
 
 
 case class Update(from: String, sets: String, where: Option[String] = None) extends Modify {
-  override def toSQL = {
+  override def toSQL(implicit adapter:Adapter) = {
     ("update " + from + " set " + sets) + (if (where.isEmpty) "" else (" where " + where.get))
   }
 }
 
 case class Delete(from: String, where: Option[String] = None) extends Modify {
-  override def toSQL = {
+  override def toSQL(implicit adapter:Adapter) = {
     "delete from " + from + (if (where.isEmpty) "" else (" where " + where.get))
   }
 }
@@ -26,7 +26,7 @@ case class Delete(from: String, where: Option[String] = None) extends Modify {
 case class Insert(from: String, pairs: Pair[String, Any]*) extends Modify {
   //  var generatedId: Long = -1L
 
-  override def toSQL = {
+  override def toSQL(implicit adapter:Adapter) = {
     val fields = pairs.map(_._1).mkString(", ")
     val values = pairs.map(_._2).map(SqlEncoder.encode(_)).mkString(", ")
 
