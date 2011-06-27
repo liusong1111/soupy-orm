@@ -4,6 +4,7 @@ import java.math.BigDecimal
 import soupy.orm.{Mapper, Query}
 import java.sql.ResultSet
 import java.util.Date
+
 class Table[M: ClassManifest](val tableName: String) extends Mapper[M] with TableDef {
   implicit val self: Table[M] = this.asInstanceOf[Table[M]]
 
@@ -33,8 +34,7 @@ class Table[M: ClassManifest](val tableName: String) extends Mapper[M] with Tabl
 
   //mapper
   def map(rs: ResultSet): M = {
-    val clazz = implicitly[ClassManifest[M]]
-    val instance = clazz.erasure.newInstance.asInstanceOf[M]
+    val instance = build
     val m = instance.asInstanceOf[Model]
     m.isNew = false
     properties.foreach {
@@ -46,16 +46,34 @@ class Table[M: ClassManifest](val tableName: String) extends Mapper[M] with Tabl
     instance
   }
 
+  def build: M = {
+    val clazz = implicitly[ClassManifest[M]]
+    val instance = clazz.erasure.newInstance.asInstanceOf[M]
+
+    instance
+  }
+
   //for convenience
   def q = {
     Query(tableName).select("select " + columnsString)
   }
 
-  def fillByMap(m: M, map: Map[String, String], _properties:Option[List[Property[Any, M]]] = None) = {
+  def fillByMap(m: M, map: Map[String, String], _properties: Option[List[Property[Any, M]]] = None):M = {
     val properties = _properties.getOrElse(this.properties)
-    properties.foreach{ property =>
-      val propertyValue = property.decode(map.getOrElse(property.propertyName, ""))
-      property.set(m, propertyValue)
+    properties.foreach {
+      property =>
+        val propertyValue = property.decode(map.getOrElse(property.propertyName, ""))
+        property.set(m, propertyValue)
     }
+
+    m
+  }
+
+  def buildByMap(map: Map[String, String], _properties: Option[List[Property[Any, M]]] = None): M = {
+    val instance = build
+    val m = instance.asInstanceOf[Model]
+    fillByMap(instance, map, _properties)
+
+    instance
   }
 }
