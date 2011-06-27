@@ -10,6 +10,8 @@ trait Adapter {
     assert(query._limit.isEmpty)
     assert(query._offset.isEmpty)
 
+    implicit val adapter = this
+
     val sql = List[Option[String]](
       Some("delete from " + query._from),
       query._join,
@@ -23,6 +25,8 @@ trait Adapter {
   }
 
   def toCountSQL(query: Query): String = {
+    implicit val adapter = this
+
     val sql = List[Option[String]](
       Some("select count(1)"),
       Some("from " + query._from),

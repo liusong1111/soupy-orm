@@ -1,11 +1,14 @@
 package soupy.orm.parts
 
+import soupy.orm.Adapter
+
 trait Part {
-  def toSQL: String
 
-  def toPrepare: (String, List[_]) = (toSQL, Nil)
+  def toSQL(implicit adapter: Adapter): String
 
-  override def toString = toSQL
+  def toPrepare(implicit adapter: Adapter): (String, List[_]) = (toSQL, Nil)
+
+  //  override def toString = toSQL
 }
 
 

@@ -6,6 +6,8 @@ object MysqlAdapter extends Adapter {
   Class.forName("com.mysql.jdbc.Driver").newInstance
 
   def toSQL(query: Query): String = {
+    implicit val adapter = this
+    
     val sql = List[Option[String]](
       Some(query._select.getOrElse("select *")),
       Some("from " + query._from),

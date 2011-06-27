@@ -1,6 +1,7 @@
 package soupy.orm.parts
 
 import soupy.orm.utils.SqlEncoder
+import soupy.orm.Adapter
 
 trait Criteria extends Part {
   def where(criteria: Criteria) = {
@@ -23,9 +24,9 @@ trait Criteria extends Part {
 trait SimpleCriteria extends Criteria
 
 class NormalCriteria[A](val prop: String, val op: String, val value: A) extends SimpleCriteria {
-  override def toSQL = prop + " " + op + " " + SqlEncoder.encode(value)
+  override def toSQL(implicit adapter: Adapter) = prop + " " + op + " " + SqlEncoder.encode(value)
 
-  override def toPrepare: (String, List[_]) = {
+  override def toPrepare(implicit adapter: Adapter): (String, List[_]) = {
     val sql = prop + " " + op + " ? "
     val params = List(value)
     (sql, params)
@@ -47,15 +48,15 @@ class LessEqualCriteria[A](override val prop: String, override val value: A) ext
 class LikeCriteria[A](override val prop: String, override val value: A) extends NormalCriteria(prop, "like", value)
 
 class IsNullCriteria(val prop: String) extends SimpleCriteria {
-  override def toSQL = prop + " is null"
+  override def toSQL(implicit adapter:Adapter) = prop + " is null"
 }
 
 class IsNotNullCriteria(val prop: String) extends SimpleCriteria {
-  override def toSQL = prop + " is not null"
+  override def toSQL(implicit adapter:Adapter) = prop + " is not null"
 }
 
 class InCriteria[A](val prop: String, val values: List[A]) extends SimpleCriteria {
-  override def toSQL = {
+  override def toSQL(implicit adapter:Adapter) = {
     if (!values.isEmpty) {
       prop + " in (" + values.map {
         value => SqlEncoder.encode(value)
@@ -70,14 +71,14 @@ trait CompositeCriteria extends Criteria
 
 class AndCriteria(val criterias: Criteria*) extends CompositeCriteria {
   override
-  def toSQL = {
+  def toSQL(implicit adapter: Adapter) = {
     criterias.map {
       criteria => if (criteria.isInstanceOf[OrCriteria]) "(" + criteria.toSQL + ")" else criteria.toSQL
     }.mkString(" AND ")
   }
 
   override
-  def toPrepare = {
+  def toPrepare(implicit adapter: Adapter) = {
     val stat = criterias.map {
       criteria => if (criteria.isInstanceOf[OrCriteria]) "(" + criteria.toPrepare._1 + ")" else criteria.toPrepare._1
     }.mkString(" AND ")
@@ -94,14 +95,14 @@ class AndCriteria(val criterias: Criteria*) extends CompositeCriteria {
 
 class OrCriteria(val criterias: Criteria*) extends CompositeCriteria {
   override
-  def toSQL = {
+  def toSQL(implicit adapter: Adapter) = {
     criterias.map {
       criteria => if (criteria.isInstanceOf[AndCriteria]) "(" + criteria.toSQL + ")" else criteria.toSQL
     }.mkString(" OR ")
   }
 
   override
-  def toPrepare = {
+  def toPrepare(implicit adapter: Adapter) = {
     val stat = criterias.map {
       criteria => if (criteria.isInstanceOf[AndCriteria]) "(" + criteria.toPrepare._1 + ")" else criteria.toPrepare._1
     }.mkString(" OR ")
@@ -117,13 +118,13 @@ class OrCriteria(val criterias: Criteria*) extends CompositeCriteria {
 }
 
 class RawCriteria(val sqlTemplate: String) extends SimpleCriteria {
-  override def toSQL = sqlTemplate
+  override def toSQL(implicit adapter:Adapter) = sqlTemplate
 }
 
 class ListRawCriteria(override val sqlTemplate: String, val args: List[_]) extends RawCriteria(sqlTemplate) {
-  override def toSQL = sqlTemplate
+  override def toSQL(implicit adapter:Adapter) = sqlTemplate
 
-  override def toPrepare = {
+  override def toPrepare(implicit adapter: Adapter) = {
     (sqlTemplate, args)
   }
 }

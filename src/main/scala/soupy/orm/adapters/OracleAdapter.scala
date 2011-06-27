@@ -4,6 +4,8 @@ import soupy.orm.{Query, Adapter}
 
 object OracleAdapter extends Adapter {
   def toSQL(query: Query): String = {
+    implicit val adapter = this
+
     var sql = List[Option[String]](
       (if (query._select.isEmpty) Some("select *") else query._select),
       Some("from " + query._from),

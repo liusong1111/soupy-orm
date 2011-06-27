@@ -11,6 +11,7 @@ object SqlEncoder {
     value match {
       case s: String => "'" + singleQuoteRegexp.replaceAllIn(s, "''") + "'"
       case d: Date => "'" + dateFormat.format(d) + "'"
+//      case d: Date => "to_date('" + dateFormat.format(d) + "','yyyy-mm-dd')"
       case _ => value.toString
     }
   }
