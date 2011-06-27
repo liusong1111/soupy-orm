@@ -95,16 +95,16 @@ case class Query(val _from: String = null,
     this.copy(_where = the_where)
   }
 
-  def all[A](implicit mapper: Mapper[A], repository: Repository): List[A] = {
-    SQL(repository.adapter.toSQL(this)).all[A](mapper, repository)
+  def all[A](implicit mapper: Mapper[A], repository: Repository, manifest: ClassManifest[A]): List[A] = {
+    SQL(repository.adapter.toSQL(this)).all[A](mapper, repository, manifest)
   }
 
-  def first[A](implicit mapper: Mapper[A], repository: Repository): Option[A] = {
-    SQL(repository.adapter.toSQL(this.limit(1))).first[A](mapper, repository)
+  def first[A](implicit mapper: Mapper[A], repository: Repository, manifest: ClassManifest[A]): Option[A] = {
+    SQL(repository.adapter.toSQL(this.limit(1))).first[A](mapper, repository, manifest)
   }
 
-  def count(implicit repository: Repository): Int = {
-    SQL(repository.adapter.toCountSQL(this)).first(IntMapper, repository).get
+  def count(implicit repository: Repository, manifest: ClassManifest[Int]): Int = {
+    SQL(repository.adapter.toCountSQL(this)).first(IntMapper, repository, manifest).get
   }
 
   def destroyAll(implicit repository: Repository): Int = {

@@ -7,7 +7,8 @@ class DefaultRepository(val adapter: Adapter, val connectionProvider: Connection
     connectionProvider.executeUpdate(sql)
   }
 
-  def executeQuery[A](sql: String)(implicit mapper: Mapper[A]) = {
+  def executeQuery[A: ClassManifest : Mapper](sql: String) = {
+    val mapper = implicitly[Mapper[A]]
     var result = List[A]()
     connectionProvider.executeQuery(sql) {
       rs =>

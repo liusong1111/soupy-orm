@@ -27,12 +27,12 @@ class ReflectMapperSpec extends Spec with ShouldMatchers {
           }
         }
         val query = new Query().from("users").where("name = 'liusong'")
-        val _firstUser = query.first[User](UserMapper, repository)
+        val _firstUser = query.first[User](UserMapper, repository, implicitly)
         _firstUser.isEmpty should be(false)
         val firstUser = _firstUser.get
         firstUser.name should equal("liusong")
 
-        val list = query.all[User](UserMapper, repository)
+        val list = query.all[User](UserMapper, repository, implicitly)
         list.size should not be (0)
 
         query.count should not be (0)

@@ -1,12 +1,12 @@
 package soupy.orm
 
 case class SQL(sql: String) {
-  def all[A](implicit mapper: Mapper[A], repository: Repository): List[A] = {
-    repository.executeQuery(sql)(mapper)
+  def all[A](implicit mapper: Mapper[A], repository: Repository, manifest: ClassManifest[A]): List[A] = {
+    repository.executeQuery[A](sql)
   }
 
-  def first[A](implicit mapper: Mapper[A], repository: Repository): Option[A] = {
-    repository.executeQuery(sql)(mapper).headOption
+  def first[A](implicit mapper: Mapper[A], repository: Repository, manifest: ClassManifest[A]): Option[A] = {
+    repository.executeQuery[A](sql).headOption
   }
 
   def executeUpdate(implicit repository: Repository): Int = {
