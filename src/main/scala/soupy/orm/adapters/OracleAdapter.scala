@@ -1,6 +1,7 @@
 package soupy.orm.adapters
 
 import soupy.orm.{Query, Adapter}
+import java.util.Date
 
 object OracleAdapter extends Adapter {
   def toSQL(query: Query): String = {
@@ -27,5 +28,14 @@ object OracleAdapter extends Adapter {
     }
 
     sql
+  }
+
+  override def encode(value: Any) = {
+    value match {
+      case s: String => "'" + singleQuoteRegexp.replaceAllIn(s, "''") + "'"
+      //encode Date
+      case d: Date => "to_date('" + dateFormat.format(d) + "','yyyy-mm-dd')"
+      case _ => value.toString
+    }
   }
 }

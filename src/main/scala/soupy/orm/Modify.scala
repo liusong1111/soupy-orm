@@ -1,6 +1,5 @@
 package soupy.orm
 
-import utils.SqlEncoder
 
 trait Modify {
   def toSQL(implicit adapter:Adapter): String
@@ -28,7 +27,7 @@ case class Insert(from: String, pairs: Pair[String, Any]*) extends Modify {
 
   override def toSQL(implicit adapter:Adapter) = {
     val fields = pairs.map(_._1).mkString(", ")
-    val values = pairs.map(_._2).map(SqlEncoder.encode(_)).mkString(", ")
+    val values = pairs.map(_._2).map(adapter.encode(_)).mkString(", ")
 
     "insert into " + from + "(" + fields + ") values(" + values + ")"
   }

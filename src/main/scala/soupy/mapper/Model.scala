@@ -1,6 +1,5 @@
 package soupy.mapper
 
-import soupy.orm.utils.SqlEncoder
 import java.util.Date
 import java.math.BigDecimal
 import soupy.orm.{Delete, Update, Insert, Repository}
@@ -38,9 +37,9 @@ trait Model extends TableDef with Serializable {
   def update[M >: this.type](implicit t: Table[M], repository: Repository): Int = {
     val table = t.asInstanceOf[Table[this.type]]
     val pairs = table.properties.map(p => p.columnName -> p.get(this))
-    val sets = (for ((propName, propValue) <- pairs) yield (propName + "=" + SqlEncoder.encode(propValue))).mkString(",")
+    val sets = (for ((propName, propValue) <- pairs) yield (propName + "=" + repository.adapter.encode(propValue))).mkString(",")
     assert(!table.primaryProperties.isEmpty, "table:" + t.tableName + " should specify a primary key")
-    val where = table.primaryProperties.map(property => property.columnName + " = " + SqlEncoder.encode(property.get(this))).mkString(" AND ")
+    val where = table.primaryProperties.map(property => property.columnName + " = " + repository.adapter.encode(property.get(this))).mkString(" AND ")
     val insert = Update(table.tableName, sets, Some(where))
 
     val result = insert.executeUpdate
@@ -52,7 +51,7 @@ trait Model extends TableDef with Serializable {
   def destroy[M >: this.type](implicit t: Table[M], repository: Repository): Int = {
     val table = t.asInstanceOf[Table[this.type]]
     assert(!table.primaryProperties.isEmpty)
-    val where = table.primaryProperties.map(property => property.columnName + " = " + SqlEncoder.encode(property.get(this))).mkString(" AND ")
+    val where = table.primaryProperties.map(property => property.columnName + " = " + repository.adapter.encode(property.get(this))).mkString(" AND ")
     val delete = Delete(table.tableName, Some(where))
 
     delete.executeUpdate

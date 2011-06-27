@@ -1,6 +1,5 @@
 package soupy.orm.parts
 
-import soupy.orm.utils.SqlEncoder
 import soupy.orm.Adapter
 
 trait Criteria extends Part {
@@ -24,7 +23,7 @@ trait Criteria extends Part {
 trait SimpleCriteria extends Criteria
 
 class NormalCriteria[A](val prop: String, val op: String, val value: A) extends SimpleCriteria {
-  override def toSQL(implicit adapter: Adapter) = prop + " " + op + " " + SqlEncoder.encode(value)
+  override def toSQL(implicit adapter: Adapter) = prop + " " + op + " " + adapter.encode(value)
 
   override def toPrepare(implicit adapter: Adapter): (String, List[_]) = {
     val sql = prop + " " + op + " ? "
@@ -59,7 +58,7 @@ class InCriteria[A](val prop: String, val values: List[A]) extends SimpleCriteri
   override def toSQL(implicit adapter:Adapter) = {
     if (!values.isEmpty) {
       prop + " in (" + values.map {
-        value => SqlEncoder.encode(value)
+        value => adapter.encode(value)
       }.mkString(",") + ")"
     } else {
       " 1=1 "

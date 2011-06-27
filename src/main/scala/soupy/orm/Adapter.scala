@@ -2,9 +2,23 @@ package soupy.orm
 
 import adapters.{MysqlAdapter, OracleAdapter}
 import java.lang.Exception
+import java.text.SimpleDateFormat
+import java.util.Date
 
 trait Adapter {
   def toSQL(query: Query): String
+
+  val singleQuoteRegexp = "'".r
+  val dateFormat = new SimpleDateFormat("yyyy-MM-dd")
+
+  def encode(value: Any) = {
+    value match {
+      case s: String => "'" + singleQuoteRegexp.replaceAllIn(s, "''") + "'"
+      case d: Date => "'" + dateFormat.format(d) + "'"
+      //      case d: Date => "to_date('" + dateFormat.format(d) + "','yyyy-mm-dd')"
+      case _ => value.toString
+    }
+  }
 
   def toDeleteSQL(query: Query): String = {
     assert(query._limit.isEmpty)
