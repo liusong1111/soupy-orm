@@ -39,7 +39,7 @@ trait Model extends TableDef with Serializable {
     val table = t.asInstanceOf[Table[this.type]]
     val pairs = table.properties.map(p => p.columnName -> p.get(this))
     val sets = (for ((propName, propValue) <- pairs) yield (propName + "=" + SqlEncoder.encode(propValue))).mkString(",")
-    assert(!table.primaryProperties.isEmpty)
+    assert(!table.primaryProperties.isEmpty, "table:" + t.tableName + " should specify a primary key")
     val where = table.primaryProperties.map(property => property.columnName + " = " + SqlEncoder.encode(property.get(this))).mkString(" AND ")
     val insert = Update(table.tableName, sets, Some(where))
 
