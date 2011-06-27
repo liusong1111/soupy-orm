@@ -22,9 +22,9 @@ object OracleAdapter extends Adapter {
       val max = min + query._offset.getOrElse(0)
       sql = "select * from (select A.*, ROWNUM rn from (" +
         sql +
-        ") where ROWNUM <= " +
+        ") A where ROWNUM <= " +
         max +
-        ") where rn >= " + min + ")"
+        ") where rn >= " + min
     }
 
     sql
