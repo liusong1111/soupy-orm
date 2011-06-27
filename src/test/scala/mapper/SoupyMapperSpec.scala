@@ -7,7 +7,7 @@ import config.Setting
 import reflect.BeanInfo
 import java.util.Date
 import soupy.orm.SQL
-import soupy.mapper.{TableRegistry, Table, Model, TableDef}
+import soupy.mapper.{Table, Model, TableDef}
 
 //users
 trait UserDef extends TableDef {
@@ -21,8 +21,6 @@ class User extends Model with UserDef
 object `package` {
 
   @BeanInfo implicit object User extends Table[User]("users") with UserDef
-
-  TableRegistry.register[User](User)
 }
 
 
