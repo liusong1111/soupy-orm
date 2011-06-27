@@ -1,19 +1,19 @@
 package soupy.orm.repositories
 
-import java.sql.{DriverManager, Connection}
-import soupy.orm.{Adapter, Repository}
+import soupy.orm.{ConnectionProvider, Adapter, Mapper, Repository}
 
-class DefaultRepository(override val adapter: Adapter, override val settings: Map[String, String]) extends Repository(adapter, settings) {
-
-  //TODO: use a connection pool or container to emit connection
-  override def getConnection: Connection = {
-    val database = settings("database")
-    val user = settings.getOrElse("user", "root")
-    val password = settings.getOrElse("password", "")
-    val conn = DriverManager.getConnection("jdbc:mysql:///" + database,
-      user, password)
-
-    conn
+class DefaultRepository(val adapter: Adapter, val connectionProvider: ConnectionProvider) extends Repository {
+  def executeUpdate(sql: String): Int = {
+    connectionProvider.executeUpdate(sql)
   }
 
+  def executeQuery[A](sql: String)(implicit mapper: Mapper[A]) = {
+    var result = List[A]()
+    connectionProvider.executeQuery(sql) {
+      rs =>
+        result = result ::: List(mapper.map(rs))
+    }
+
+    result
+  }
 }
