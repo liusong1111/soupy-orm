@@ -58,18 +58,19 @@ class Table[M: ClassManifest](val tableName: String) extends Mapper[M] with Tabl
     Query(tableName).select("select " + columnsString)
   }
 
-  def fillByMap(m: M, map: Map[String, String], _properties: Option[List[Property[Any, M]]] = None):M = {
+  def fillByMap(m: M, map: Map[String, String], _properties: Option[List[Property[_, _]]] = None):M = {
     val properties = _properties.getOrElse(this.properties)
     properties.foreach {
       property =>
+        val prop = property.asInstanceOf[Property[Any, M]]
         val propertyValue = property.decode(map.getOrElse(property.propertyName, ""))
-        property.set(m, propertyValue)
+        prop.set(m, propertyValue)
     }
 
     m
   }
 
-  def buildByMap(map: Map[String, String], _properties: Option[List[Property[Any, M]]] = None): M = {
+  def buildByMap(map: Map[String, String], _properties: Option[List[Property[_, _]]] = None): M = {
     val instance = build
     val m = instance.asInstanceOf[Model]
     fillByMap(instance, map, _properties)
